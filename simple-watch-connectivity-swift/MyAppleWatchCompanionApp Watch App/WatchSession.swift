@@ -48,9 +48,15 @@ extension WatchSession: WCSessionDelegate {
         if let data = message["key"] as? String {
             DispatchQueue.main.async {
                 self.receivedData = data
+
+                let type = message["type"] as? String
                 
-                // trigger haptic feedback on the watch
-                WKInterfaceDevice.current().play(.success)
+                // Trigger haptic feedback based on the message content
+                if type == "first" {
+                    WKInterfaceDevice.current().play(.success)
+                } else {
+                    WKInterfaceDevice.current().play(.notification)
+                }
             }
         }
     }
@@ -59,3 +65,15 @@ extension WatchSession: WCSessionDelegate {
         // handle reachability changes if necessary
     }
 }
+
+
+// Add this method to handle received application context
+/*func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
+    if let data = applicationContext["key"] as? String {
+        DispatchQueue.main.async {
+            self.receivedData = data
+
+            WKInterfaceDevice.current().play(.success)
+        }
+    }
+}*/
