@@ -13,11 +13,14 @@
 		35B8534E2AE1E22000875CCF /* MyAppleWatchCompanionAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionAppApp.swift */; };
 		35B853502AE1E22000875CCF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B8534F2AE1E22000875CCF /* ContentView.swift */; };
 		35B853522AE1E22200875CCF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35B853512AE1E22200875CCF /* Assets.xcassets */; };
-		35B853552AE1E22200875CCF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35B853542AE1E22200875CCF /* Preview Assets.xcassets */; };
 		35B853582AE1E22200875CCF /* MyAppleWatchCompanionApp Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 35B8534B2AE1E22000875CCF /* MyAppleWatchCompanionApp Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		35C100272AE22CDE0044FBF0 /* WatchSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C100262AE22CDE0044FBF0 /* WatchSession.swift */; };
 		B6182D252C2F56E900D6DB74 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6182D242C2F56E900D6DB74 /* ContentView.swift */; };
 		B6182D272C2F572200D6DB74 /* WatchConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */; };
+		B6E3E6112C374289000DCE69 /* E4linkHeader.h in Sources */ = {isa = PBXBuildFile; fileRef = B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */; };
+		B6E3E6172C374903000DCE69 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6E3E6152C3748EF000DCE69 /* CoreBluetooth.framework */; };
+		B6E3E61C2C374928000DCE69 /* E4link.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6E3E6072C373914000DCE69 /* E4link.framework */; };
+		B6E3E6202C375B48000DCE69 /* E4linkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E3E61F2C375B48000DCE69 /* E4linkManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,10 +57,13 @@
 		35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAppleWatchCompanionAppApp.swift; sourceTree = "<group>"; };
 		35B8534F2AE1E22000875CCF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		35B853512AE1E22200875CCF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		35B853542AE1E22200875CCF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		35C100262AE22CDE0044FBF0 /* WatchSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSession.swift; sourceTree = "<group>"; };
 		B6182D242C2F56E900D6DB74 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityManager.swift; sourceTree = "<group>"; };
+		B6E3E6072C373914000DCE69 /* E4link.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = E4link.framework; sourceTree = "<group>"; };
+		B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = E4linkHeader.h; sourceTree = "<group>"; };
+		B6E3E6152C3748EF000DCE69 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		B6E3E61F2C375B48000DCE69 /* E4linkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = E4linkManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +71,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6E3E6172C374903000DCE69 /* CoreBluetooth.framework in Frameworks */,
+				B6E3E61C2C374928000DCE69 /* E4link.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +92,7 @@
 				35B853322AE1DDCA00875CCF /* MyAppleWatchApp */,
 				35B8534C2AE1E22000875CCF /* MyAppleWatchCompanionApp Watch App */,
 				35B853312AE1DDCA00875CCF /* Products */,
+				B6E3E6142C3748EF000DCE69 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -99,12 +108,15 @@
 		35B853322AE1DDCA00875CCF /* MyAppleWatchApp */ = {
 			isa = PBXGroup;
 			children = (
+				B6E3E6072C373914000DCE69 /* E4link.framework */,
 				35B853332AE1DDCA00875CCF /* AppDelegate.swift */,
 				35B853352AE1DDCA00875CCF /* SceneDelegate.swift */,
 				B6182D242C2F56E900D6DB74 /* ContentView.swift */,
+				B6E3E61F2C375B48000DCE69 /* E4linkManager.swift */,
 				B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */,
 				35B8533C2AE1DDCD00875CCF /* Assets.xcassets */,
 				35B853412AE1DDCD00875CCF /* Info.plist */,
+				B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */,
 			);
 			path = MyAppleWatchApp;
 			sourceTree = "<group>";
@@ -114,19 +126,18 @@
 			children = (
 				35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionAppApp.swift */,
 				35B8534F2AE1E22000875CCF /* ContentView.swift */,
-				35B853512AE1E22200875CCF /* Assets.xcassets */,
-				35B853532AE1E22200875CCF /* Preview Content */,
 				35C100262AE22CDE0044FBF0 /* WatchSession.swift */,
+				35B853512AE1E22200875CCF /* Assets.xcassets */,
 			);
 			path = "MyAppleWatchCompanionApp Watch App";
 			sourceTree = "<group>";
 		};
-		35B853532AE1E22200875CCF /* Preview Content */ = {
+		B6E3E6142C3748EF000DCE69 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				35B853542AE1E22200875CCF /* Preview Assets.xcassets */,
+				B6E3E6152C3748EF000DCE69 /* CoreBluetooth.framework */,
 			);
-			path = "Preview Content";
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -218,7 +229,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				35B853552AE1E22200875CCF /* Preview Assets.xcassets in Resources */,
 				35B853522AE1E22200875CCF /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -232,8 +242,10 @@
 			files = (
 				35B853342AE1DDCA00875CCF /* AppDelegate.swift in Sources */,
 				B6182D252C2F56E900D6DB74 /* ContentView.swift in Sources */,
+				B6E3E6202C375B48000DCE69 /* E4linkManager.swift in Sources */,
 				35B853362AE1DDCA00875CCF /* SceneDelegate.swift in Sources */,
 				B6182D272C2F572200D6DB74 /* WatchConnectivityManager.swift in Sources */,
+				B6E3E6112C374289000DCE69 /* E4linkHeader.h in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,6 +329,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -373,6 +386,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -385,20 +399,27 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = YLNAN26N46;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/MyAppleWatchApp",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/MyAppleWatchApp";
 				INFOPLIST_FILE = MyAppleWatchApp/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Connection to E4 Wristband";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/Frameworks",
+					"@executable_path",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = giovannitjahyamulia.MyAppleWatchApp;
+				PRODUCT_BUNDLE_IDENTIFIER = Katie.MyAppleWatchApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = MyAppleWatchApp/E4linkHeader.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -412,20 +433,27 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = YLNAN26N46;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/MyAppleWatchApp",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/MyAppleWatchApp";
 				INFOPLIST_FILE = MyAppleWatchApp/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Connection to E4 Wristband";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/Frameworks",
+					"@executable_path",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = giovannitjahyamulia.MyAppleWatchApp;
+				PRODUCT_BUNDLE_IDENTIFIER = Katie.MyAppleWatchApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = MyAppleWatchApp/E4linkHeader.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -438,19 +466,19 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MyAppleWatchCompanionApp Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = TK9Q85JSJZ;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = YLNAN26N46;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = MyAppleWatchCompanionApp;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = giovannitjahyamulia.MyAppleWatchApp;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = Katie.MyAppleWatchApp;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/Frameworks",
+					"@executable_path",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = giovannitjahyamulia.MyAppleWatchApp.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = Katie.MyAppleWatchApp.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -468,19 +496,19 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MyAppleWatchCompanionApp Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = TK9Q85JSJZ;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = YLNAN26N46;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = MyAppleWatchCompanionApp;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = giovannitjahyamulia.MyAppleWatchApp;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = Katie.MyAppleWatchApp;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/Frameworks",
+					"@executable_path",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = giovannitjahyamulia.MyAppleWatchApp.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = Katie.MyAppleWatchApp.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;

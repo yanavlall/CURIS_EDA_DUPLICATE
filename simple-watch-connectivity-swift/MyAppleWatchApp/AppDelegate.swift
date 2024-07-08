@@ -2,20 +2,25 @@
 //  AppDelegate.swift
 //  MyAppleWatchApp
 //
-//  Created by Giovanni Tjahyamulia on 20/10/23.
-//
 
 import SwiftUI
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        EmpaticaAPI.initialize()
         return true
     }
 
-    // MARK: UISceneSession Lifecycle
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
+        EmpaticaAPI.prepareForBackground()
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        // Restart any tasks that were paused (or not yet started) while the application was inactive.
+        EmpaticaAPI.prepareForResume()
+    }
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         // Called when a new scene session is being created.
