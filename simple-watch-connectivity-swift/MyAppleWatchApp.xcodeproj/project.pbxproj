@@ -17,9 +17,9 @@
 		35C100272AE22CDE0044FBF0 /* WatchSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C100262AE22CDE0044FBF0 /* WatchSession.swift */; };
 		B6182D252C2F56E900D6DB74 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6182D242C2F56E900D6DB74 /* ContentView.swift */; };
 		B6182D272C2F572200D6DB74 /* WatchConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */; };
+		B6CB44D42C3CAD0D00176951 /* E4link.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CB44D32C3CAD0D00176951 /* E4link.framework */; };
 		B6E3E6112C374289000DCE69 /* E4linkHeader.h in Sources */ = {isa = PBXBuildFile; fileRef = B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */; };
 		B6E3E6172C374903000DCE69 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6E3E6152C3748EF000DCE69 /* CoreBluetooth.framework */; };
-		B6E3E61C2C374928000DCE69 /* E4link.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6E3E6072C373914000DCE69 /* E4link.framework */; };
 		B6E3E6202C375B48000DCE69 /* E4linkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E3E61F2C375B48000DCE69 /* E4linkManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -60,7 +60,7 @@
 		35C100262AE22CDE0044FBF0 /* WatchSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSession.swift; sourceTree = "<group>"; };
 		B6182D242C2F56E900D6DB74 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityManager.swift; sourceTree = "<group>"; };
-		B6E3E6072C373914000DCE69 /* E4link.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = E4link.framework; sourceTree = "<group>"; };
+		B6CB44D32C3CAD0D00176951 /* E4link.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = E4link.framework; sourceTree = "<group>"; };
 		B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = E4linkHeader.h; sourceTree = "<group>"; };
 		B6E3E6152C3748EF000DCE69 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		B6E3E61F2C375B48000DCE69 /* E4linkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = E4linkManager.swift; sourceTree = "<group>"; };
@@ -72,7 +72,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6E3E6172C374903000DCE69 /* CoreBluetooth.framework in Frameworks */,
-				B6E3E61C2C374928000DCE69 /* E4link.framework in Frameworks */,
+				B6CB44D42C3CAD0D00176951 /* E4link.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,7 +108,6 @@
 		35B853322AE1DDCA00875CCF /* MyAppleWatchApp */ = {
 			isa = PBXGroup;
 			children = (
-				B6E3E6072C373914000DCE69 /* E4link.framework */,
 				35B853332AE1DDCA00875CCF /* AppDelegate.swift */,
 				35B853352AE1DDCA00875CCF /* SceneDelegate.swift */,
 				B6182D242C2F56E900D6DB74 /* ContentView.swift */,
@@ -135,6 +134,7 @@
 		B6E3E6142C3748EF000DCE69 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B6CB44D32C3CAD0D00176951 /* E4link.framework */,
 				B6E3E6152C3748EF000DCE69 /* CoreBluetooth.framework */,
 			);
 			name = Frameworks;
@@ -402,7 +402,7 @@
 				DEVELOPMENT_TEAM = YLNAN26N46;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/MyAppleWatchApp",
+					"$(PROJECT_DIR)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/MyAppleWatchApp";
@@ -436,7 +436,7 @@
 				DEVELOPMENT_TEAM = YLNAN26N46;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/MyAppleWatchApp",
+					"$(PROJECT_DIR)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/MyAppleWatchApp";
