@@ -113,9 +113,9 @@
 				B6182D242C2F56E900D6DB74 /* ContentView.swift */,
 				B6E3E61F2C375B48000DCE69 /* E4linkManager.swift */,
 				B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */,
+				B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */,
 				35B8533C2AE1DDCD00875CCF /* Assets.xcassets */,
 				35B853412AE1DDCD00875CCF /* Info.plist */,
-				B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */,
 			);
 			path = MyAppleWatchApp;
 			sourceTree = "<group>";

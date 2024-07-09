@@ -5,7 +5,7 @@
 
 import SwiftUI
 import WatchConnectivity
-    
+
 struct ContentView: View {
     @ObservedObject var watchConnectivityManager = WatchConnectivityManager.shared
     @ObservedObject var e4linkManager = E4linkManager.shared
@@ -32,12 +32,25 @@ struct ContentView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
+                Button(action: {
+                    e4linkManager.restartDiscovery()
+                }) {
+                    Text("Restart Discovery")
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
                 List(e4linkManager.devices, id: \.serialNumber) { device in
                     VStack(alignment: .leading) {
                         Text("Device: \(device.name)")
                             .font(.headline)
                         Text("Serial Number: \(device.serialNumber)")
                             .font(.subheadline)
+                        Text("Status: \(e4linkManager.deviceStatusDisplay(status: device.deviceStatus))")
+                            .font(.subheadline)
+                    }.onTapGesture {
+                        e4linkManager.select(device: device)
                     }
                 }
             }
