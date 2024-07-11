@@ -9,6 +9,7 @@ import WatchConnectivity
 struct ContentView: View {
     @ObservedObject var watchConnectivityManager = WatchConnectivityManager.shared
     @ObservedObject var e4linkManager = E4linkManager.shared
+    @State var showAlert = false
 
     var body: some View {
         NavigationView {
@@ -47,10 +48,20 @@ struct ContentView: View {
                             .font(.headline)
                         Text("Serial Number: \(device.serialNumber)")
                             .font(.subheadline)
-                        Text("Status: \(e4linkManager.deviceStatusDisplay(status: device.deviceStatus))")
+                        Text("Status: \(e4linkManager.deviceStatus)")
                             .font(.subheadline)
                     }.onTapGesture {
                         e4linkManager.select(device: device)
+                    }.onChange(of: e4linkManager.deviceStatus) { oldState, newState in
+                        if newState == "Disconnected" {
+                            showAlert = true
+                        }
+                    }.alert(isPresented: $showAlert) {
+                        Alert(
+                            title: Text("Device Disconnected"),
+                            message: Text("\(device.name ?? "") has been disconnected. Rediscovering..."),
+                            dismissButton: .default(Text("OK"))
+                        )
                     }
                 }
             }

@@ -10,7 +10,8 @@ class E4linkManager: NSObject, ObservableObject {
     
     @Published var devices: [EmpaticaDeviceManager] = []
     @Published var firstPress = true
-    
+    @Published var deviceStatus = "Disconnected"
+
     var allDisconnected: Bool {
         return self.devices.reduce(true) { (value, device) -> Bool in
             value && device.deviceStatus == kDeviceStatusDisconnected
@@ -124,6 +125,10 @@ extension E4linkManager: EmpaticaDelegate {
 }
 
 extension E4linkManager: EmpaticaDeviceDelegate {
+    func didReceiveAccelerationX(_ x: Int8, y: Int8, z: Int8, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
+        print("Recieved Acceleration!")
+    }
+    
     func didUpdate( _ status: DeviceStatus, forDevice device: EmpaticaDeviceManager!) {
         switch status {
         case kDeviceStatusDisconnected:
@@ -146,5 +151,6 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         default:
             break
         }
+        deviceStatus = deviceStatusDisplay(status: device.deviceStatus)
     }
 }
