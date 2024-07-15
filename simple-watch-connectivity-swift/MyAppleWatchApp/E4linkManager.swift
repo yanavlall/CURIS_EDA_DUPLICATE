@@ -4,14 +4,17 @@
 //
 
 import Foundation
+import Zip
 
 class E4linkManager: NSObject, ObservableObject {
     static let shared = E4linkManager()
     
     @Published var devices: [EmpaticaDeviceManager] = []
-    @Published var firstPress = true
     @Published var deviceStatus = "Disconnected"
-
+    
+    var ACCstruct = CSVlog(filename: "ACC.csv")
+    
+    var firstPress = true
     var allDisconnected: Bool {
         return self.devices.reduce(true) { (value, device) -> Bool in
             value && device.deviceStatus == kDeviceStatusDisconnected
@@ -60,8 +63,8 @@ class E4linkManager: NSObject, ObservableObject {
             } else if !device.isFaulty && device.allowed {
                 self.connect(device: device)
             }
+            self.firstPress = false
         }
-        self.firstPress = false
     }
     
     func deviceStatusDisplay(status : DeviceStatus) -> String {
@@ -126,13 +129,14 @@ extension E4linkManager: EmpaticaDelegate {
 
 extension E4linkManager: EmpaticaDeviceDelegate {
     func didReceiveAccelerationX(_ x: Int8, y: Int8, z: Int8, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
-        print("Recieved Acceleration!")
+        self.ACCstruct.appendData(x: x, y: y, z: z, withTimestamp: timestamp)
     }
     
     func didUpdate( _ status: DeviceStatus, forDevice device: EmpaticaDeviceManager!) {
         switch status {
         case kDeviceStatusDisconnected:
             print("[didUpdate] Disconnected \(device.serialNumber!).")
+            self.saveSession()
             self.restartDiscovery()
             break
         case kDeviceStatusConnecting:
@@ -151,6 +155,64 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         default:
             break
         }
-        deviceStatus = deviceStatusDisplay(status: device.deviceStatus)
+        self.deviceStatus = deviceStatusDisplay(status: device.deviceStatus)
+    }
+    
+    func saveSession() {
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy!HH:mm:ss"
+        let dayInWeek = dateFormatter.string(from: date)
+        let filename = "Session::" + dayInWeek
+
+        self.ACCstruct.writeToUrl()
+        /*BVPstruct.writeToUrl()
+        EDAstruct.writeToUrl()
+        TEMPstruct.writeToUrl()
+        IBIstruct.writeToUrl()
+        HRstruct.writeToUrl()*/
+
+        do {
+            let path = try Zip.quickZipFiles([self.ACCstruct.path], fileName: filename)
+            // file:///var/mobile/Containers/Data/Application/D4BD4F66-E243-44A7-AF99-8C6ACDDDAF99/Documents/Session::13-07-2024!01:56:59.zip
+            print(path.absoluteString)
+        } catch {
+            print("Something went wrong...")
+        }
+        self.resetFiles()
+    }
+    
+    func resetFiles() {
+        self.ACCstruct = CSVlog(filename: "ACC.csv")
+    }
+}
+
+struct CSVlog {
+    let filename: String
+    var path: URL
+    var headerSet: Bool = false
+    var content: String = ""
+
+    init(filename: String) {
+        self.filename = filename
+        self.path = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(filename)
+    }
+
+    mutating func appendData(x: Int8, y: Int8, z: Int8, withTimestamp timestamp: Double) {
+        if !headerSet {
+            content.append("\(timestamp)\n32.000000, 32.000000, 32.000000\n")
+            headerSet = true
+        }
+        content.append("\(x),\(y),\(z)\n")
+    }
+
+    func writeToUrl() {
+        do {
+            // file:///private/var/mobile/Containers/Data/Application/D4BD4F66-E243-44A7-AF99-8C6ACDDDAF99/tmp/ACC.csv
+            try content.write(to: path, atomically: true, encoding: .utf8)
+        } catch {
+            print("Failed to create file for export ...")
+            print("\(error)")
+        }
     }
 }

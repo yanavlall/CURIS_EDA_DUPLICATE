@@ -5,6 +5,7 @@
 
 import Foundation
 import WatchConnectivity
+import UserNotifications
 
 class WatchConnectivityManager: NSObject, ObservableObject, WCSessionDelegate {
     static let shared = WatchConnectivityManager()
@@ -32,20 +33,32 @@ class WatchConnectivityManager: NSObject, ObservableObject, WCSessionDelegate {
         let dict: [String: Any] = ["key": "Data Received", "type": "first"]
         
         // Send data to Watch App via Message.
-        do {
-            wcSession?.sendMessage(dict, replyHandler: nil)     // removed a try
-            print("Data sent: \(dict)")
-        }
+        wcSession?.sendMessage(dict, replyHandler: nil)
+        print("Data sent: \(dict)")
+        
+        //sendNotification(title: "Data Sent", body: "First-type data sent to Apple Watch")
+
     }
     
     func sendDataFromPhonePt2() {
         let dict: [String: Any] = ["key": "Data Received", "type": "second"]
         
-        do {
-            wcSession?.sendMessage(dict, replyHandler: nil)
-            print("Data sent: \(dict)")
-        }
+        wcSession?.sendMessage(dict, replyHandler: nil)
+        print("Data sent: \(dict)")
+        
+        //sendNotification(title: "Data Sent", body: "Second-type data sent to Apple Watch")
+
     }
+    
+    /*func sendNotification(title: String, body: String) {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = UNNotificationSound.default
+        
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+    }*/
 
     // Delegate Watch Session.
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
