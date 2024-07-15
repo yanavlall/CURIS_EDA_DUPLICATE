@@ -132,6 +132,14 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         self.ACCstruct.appendData(x: x, y: y, z: z, withTimestamp: timestamp)
     }
     
+    func shouldSpike(newValue: Any) {
+        
+    }
+    
+    func didReceiveGSR(_ gsr: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
+        
+    }
+    
     func didUpdate( _ status: DeviceStatus, forDevice device: EmpaticaDeviceManager!) {
         switch status {
         case kDeviceStatusDisconnected:
