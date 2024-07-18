@@ -14,7 +14,6 @@ class E4linkManager: NSObject, ObservableObject {
     
     var ACCstruct = CSVlog(filename: "ACC.csv")
     
-    var firstPress = true
     var allDisconnected: Bool {
         return self.devices.reduce(true) { (value, device) -> Bool in
             value && device.deviceStatus == kDeviceStatusDisconnected
@@ -55,15 +54,12 @@ class E4linkManager: NSObject, ObservableObject {
     }
     
     func select(device: EmpaticaDeviceManager) {
-        if self.firstPress {
-            print("Selecting...")
-            EmpaticaAPI.cancelDiscovery()
-            if device.deviceStatus == kDeviceStatusConnected || device.deviceStatus == kDeviceStatusConnecting {
-                self.disconnect(device: device)
-            } else if !device.isFaulty && device.allowed {
-                self.connect(device: device)
-            }
-            self.firstPress = false
+        print("Selecting...")
+        EmpaticaAPI.cancelDiscovery()
+        if device.deviceStatus == kDeviceStatusConnected || device.deviceStatus == kDeviceStatusConnecting {
+            self.disconnect(device: device)
+        } else if !device.isFaulty && device.allowed {
+            self.connect(device: device)
         }
     }
     
@@ -89,7 +85,6 @@ class E4linkManager: NSObject, ObservableObject {
         guard EmpaticaAPI.status() == kBLEStatusReady else { return }
         if self.allDisconnected {
             print("restartDiscovery • allDisconnected")
-            self.firstPress = true
             self.discover()
         }
     }

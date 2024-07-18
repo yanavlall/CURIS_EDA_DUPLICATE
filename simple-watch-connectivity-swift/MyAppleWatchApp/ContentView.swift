@@ -10,7 +10,8 @@ struct ContentView: View {
     @ObservedObject var watchConnectivityManager = WatchConnectivityManager.shared
     @ObservedObject var e4linkManager = E4linkManager.shared
     @ObservedObject var dataManager = DataManager.shared
-    @State var showAlert = false
+    //@State var showDisconnectAlert = false
+    @State var showDisconnectedAlert = false
     @State var showDeleteAlert = false
     
     var screenWidth = UIScreen.main.bounds.size.width
@@ -52,15 +53,12 @@ struct ContentView: View {
                                 .font(.caption)
                                 .foregroundColor(.white)
                         }
-                        /*.onTapGesture {
-                            e4linkManager.select(device: device)
-                        }*/
                         .onChange(of: e4linkManager.deviceStatus) { oldState, newState in
                             if newState == "Disconnected" {
-                                showAlert = true
+                                showDisconnectedAlert = true
                             }
                         }
-                        .alert(isPresented: $showAlert) {
+                        .alert(isPresented: $showDisconnectedAlert) {
                             Alert(
                                 title: Text("Device Disconnected"),
                                 message: Text("\(device.name ?? "") has been disconnected. Rediscovering..."),
@@ -71,15 +69,38 @@ struct ContentView: View {
                         Button(action: {
                             e4linkManager.select(device: device)
                         }) {
-                            Text("Connect")
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 20)
-                                .foregroundColor(.white)
-                                .background(Color(red: 0.13333333333, green: 0.43921568627, blue: 0.70980392156).opacity(0.5))
-                                .cornerRadius(25)
-                                .font(Font.system(.footnote, design: .rounded))
+                            if (e4linkManager.deviceStatus == "Disconnected") {
+                                Text("Connect")
+                                    .padding(.horizontal, 18)
+                                    .padding(.vertical, 20)
+                                    .foregroundColor(.white)
+                                    .background(Color(red: 0.13333333333, green: 0.43921568627, blue: 0.70980392156).opacity(0.5))
+                                    .cornerRadius(25)
+                                    .font(Font.system(.footnote, design: .rounded))
+                            } else if (e4linkManager.deviceStatus == "Connected") {
+                                Text("Disconnect")
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 20)
+                                    .foregroundColor(.white)
+                                    .background(Color(red: 0.13333333333, green: 0.43921568627, blue: 0.70980392156).opacity(0.5))
+                                    .cornerRadius(25)
+                                    .font(Font.system(.footnote, design: .rounded))
+                            }
+                            
                         }
-                    }.padding(.horizontal, 20)
+                    }
+                    /*.alert(isPresented: $showDisconnectAlert) {
+                        Alert(
+                            title: Text("Disconnect from E4 Device"),
+                            message: Text("Are you sure you want to disconnect?"),
+                            primaryButton: .destructive(Text("Yes"), action: {
+                                e4linkManager.select(device: device)
+                                showDisconnectAlert = false
+                            }),
+                            secondaryButton: .default(Text("No"))
+                        )
+                    }*/
+                    .padding(.horizontal, 20)
                 }
             }
             HStack(alignment: .firstTextBaseline) {
@@ -142,9 +163,6 @@ struct ContentView: View {
             HStack(spacing: 20) {
                 Button(action: {
                     watchConnectivityManager.sendDataFromPhone()
-                    //let nc = NotificationCenter.default
-                    //nc.post(name: Notification.Name("UserLoggedIn"), object: nil)
-                    //sendNotification(title: "Data Sent", body: "Second-type data sent to Apple Watch")
                 }) {
                     Text("Send Data")
                         .padding(.horizontal, 10)
@@ -182,19 +200,4 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-/*func sendNotification(title: String, body: String) {
-    let content = UNMutableNotificationContent()
-    content.title = title
-    content.body = body
-    content.sound = UNNotificationSound.default
-    
-    // let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: false)
-    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-    
-    UNUserNotificationCenter.current().add(request) { error in
-        if let error = error {
-            print("Not able to add notification: \(error.localizedDescription)")
-            return
-        }
-    }
-}*/
+
