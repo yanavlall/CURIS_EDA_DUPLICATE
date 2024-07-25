@@ -35,6 +35,25 @@ class E4linkManager: NSObject, ObservableObject {
         }
     }
     
+    func notify() {
+        let center = UNUserNotificationCenter.current()
+        let content = UNMutableNotificationContent()
+        content.title = "My notification title"
+        content.body = "My notification body"
+        content.sound = .default // Ensure sound is set
+        content.badge = NSNumber(value: 1) // Optionally set badge
+
+        let notification = UNNotificationRequest(identifier: "com.example.mynotification", content: content, trigger: nil)
+        
+        center.add(notification) { error in
+            if let error = error {
+                print("Failed to add notification: \(error)")
+            } else {
+                print("Notification added successfully.")
+            }
+        }
+    }
+    
     func discover() {
         print("Discovering...")
         EmpaticaAPI.discoverDevices(with: self)
@@ -139,6 +158,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         switch status {
         case kDeviceStatusDisconnected:
             print("[didUpdate] Disconnected \(device.serialNumber!).")
+            self.notify()
             self.saveSession()
             self.restartDiscovery()
             break

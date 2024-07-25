@@ -4,12 +4,37 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Request notification authorization
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            if let error = error {
+                print("Request authorization failed: \(error.localizedDescription)")
+            } else if granted {
+                print("Notification permission granted.")
+            } else {
+                print("Notification permission denied.")
+            }
+        }
+        
+        // Set the delegate to self
+        UNUserNotificationCenter.current().delegate = self
+    
         EmpaticaAPI.initialize()
         return true
+    }
+            
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // Handle the notification when the app is in the foreground
+        completionHandler([.banner, .sound, .badge])
+    }
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        // Handle the user's response to the notification
+        completionHandler()
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
