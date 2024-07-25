@@ -10,10 +10,10 @@
 		35B853342AE1DDCA00875CCF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B853332AE1DDCA00875CCF /* AppDelegate.swift */; };
 		35B853362AE1DDCA00875CCF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B853352AE1DDCA00875CCF /* SceneDelegate.swift */; };
 		35B8533D2AE1DDCD00875CCF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35B8533C2AE1DDCD00875CCF /* Assets.xcassets */; };
-		35B8534E2AE1E22000875CCF /* MyAppleWatchCompanionAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionAppApp.swift */; };
+		35B8534E2AE1E22000875CCF /* MyAppleWatchCompanionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionApp.swift */; };
 		35B853502AE1E22000875CCF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B8534F2AE1E22000875CCF /* ContentView.swift */; };
 		35B853522AE1E22200875CCF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35B853512AE1E22200875CCF /* Assets.xcassets */; };
-		35B853582AE1E22200875CCF /* MyAppleWatchCompanionApp Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 35B8534B2AE1E22000875CCF /* MyAppleWatchCompanionApp Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		35B853582AE1E22200875CCF /* MyAppleWatchCompanionApp.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 35B8534B2AE1E22000875CCF /* MyAppleWatchCompanionApp.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		35C100272AE22CDE0044FBF0 /* WatchSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C100262AE22CDE0044FBF0 /* WatchSession.swift */; };
 		B6182D252C2F56E900D6DB74 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6182D242C2F56E900D6DB74 /* ContentView.swift */; };
 		B6182D272C2F572200D6DB74 /* WatchConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */; };
@@ -42,7 +42,7 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				35B853582AE1E22200875CCF /* MyAppleWatchCompanionApp Watch App.app in Embed Watch Content */,
+				35B853582AE1E22200875CCF /* MyAppleWatchCompanionApp.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -55,13 +55,14 @@
 		35B853352AE1DDCA00875CCF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		35B8533C2AE1DDCD00875CCF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		35B853412AE1DDCD00875CCF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		35B8534B2AE1E22000875CCF /* MyAppleWatchCompanionApp Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MyAppleWatchCompanionApp Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAppleWatchCompanionAppApp.swift; sourceTree = "<group>"; };
+		35B8534B2AE1E22000875CCF /* MyAppleWatchCompanionApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyAppleWatchCompanionApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAppleWatchCompanionApp.swift; sourceTree = "<group>"; };
 		35B8534F2AE1E22000875CCF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		35B853512AE1E22200875CCF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		35C100262AE22CDE0044FBF0 /* WatchSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSession.swift; sourceTree = "<group>"; };
 		B6182D242C2F56E900D6DB74 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityManager.swift; sourceTree = "<group>"; };
+		B646EF472C52493B005F6C5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		B67ADD872C41BE070062906E /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		B6CB44D32C3CAD0D00176951 /* E4link.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = E4link.framework; sourceTree = "<group>"; };
 		B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = E4linkHeader.h; sourceTree = "<group>"; };
@@ -94,7 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				35B853322AE1DDCA00875CCF /* MyAppleWatchApp */,
-				35B8534C2AE1E22000875CCF /* MyAppleWatchCompanionApp Watch App */,
+				35B8534C2AE1E22000875CCF /* MyAppleWatchCompanionApp */,
 				35B853312AE1DDCA00875CCF /* Products */,
 				B6E3E6142C3748EF000DCE69 /* Frameworks */,
 			);
@@ -104,7 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				35B853302AE1DDCA00875CCF /* MyAppleWatchApp.app */,
-				35B8534B2AE1E22000875CCF /* MyAppleWatchCompanionApp Watch App.app */,
+				35B8534B2AE1E22000875CCF /* MyAppleWatchCompanionApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -125,15 +126,16 @@
 			path = MyAppleWatchApp;
 			sourceTree = "<group>";
 		};
-		35B8534C2AE1E22000875CCF /* MyAppleWatchCompanionApp Watch App */ = {
+		35B8534C2AE1E22000875CCF /* MyAppleWatchCompanionApp */ = {
 			isa = PBXGroup;
 			children = (
-				35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionAppApp.swift */,
+				35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionApp.swift */,
 				35B8534F2AE1E22000875CCF /* ContentView.swift */,
 				35C100262AE22CDE0044FBF0 /* WatchSession.swift */,
 				35B853512AE1E22200875CCF /* Assets.xcassets */,
+				B646EF472C52493B005F6C5E /* Info.plist */,
 			);
-			path = "MyAppleWatchCompanionApp Watch App";
+			path = MyAppleWatchCompanionApp;
 			sourceTree = "<group>";
 		};
 		B6E3E6142C3748EF000DCE69 /* Frameworks */ = {
@@ -170,9 +172,9 @@
 			productReference = 35B853302AE1DDCA00875CCF /* MyAppleWatchApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		35B8534A2AE1E22000875CCF /* MyAppleWatchCompanionApp Watch App */ = {
+		35B8534A2AE1E22000875CCF /* MyAppleWatchCompanionApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 35B8535C2AE1E22300875CCF /* Build configuration list for PBXNativeTarget "MyAppleWatchCompanionApp Watch App" */;
+			buildConfigurationList = 35B8535C2AE1E22300875CCF /* Build configuration list for PBXNativeTarget "MyAppleWatchCompanionApp" */;
 			buildPhases = (
 				35B853472AE1E22000875CCF /* Sources */,
 				35B853482AE1E22000875CCF /* Frameworks */,
@@ -182,9 +184,9 @@
 			);
 			dependencies = (
 			);
-			name = "MyAppleWatchCompanionApp Watch App";
+			name = MyAppleWatchCompanionApp;
 			productName = "MyAppleWatchCompanionApp Watch App";
-			productReference = 35B8534B2AE1E22000875CCF /* MyAppleWatchCompanionApp Watch App.app */;
+			productReference = 35B8534B2AE1E22000875CCF /* MyAppleWatchCompanionApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -222,7 +224,7 @@
 			projectRoot = "";
 			targets = (
 				35B8532F2AE1DDCA00875CCF /* MyAppleWatchApp */,
-				35B8534A2AE1E22000875CCF /* MyAppleWatchCompanionApp Watch App */,
+				35B8534A2AE1E22000875CCF /* MyAppleWatchCompanionApp */,
 			);
 		};
 /* End PBXProject section */
@@ -266,7 +268,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				35B853502AE1E22000875CCF /* ContentView.swift in Sources */,
-				35B8534E2AE1E22000875CCF /* MyAppleWatchCompanionAppApp.swift in Sources */,
+				35B8534E2AE1E22000875CCF /* MyAppleWatchCompanionApp.swift in Sources */,
 				35C100272AE22CDE0044FBF0 /* WatchSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -276,7 +278,7 @@
 /* Begin PBXTargetDependency section */
 		35B853572AE1E22200875CCF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 35B8534A2AE1E22000875CCF /* MyAppleWatchCompanionApp Watch App */;
+			target = 35B8534A2AE1E22000875CCF /* MyAppleWatchCompanionApp */;
 			targetProxy = 35B853562AE1E22200875CCF /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -484,6 +486,7 @@
 				DEVELOPMENT_TEAM = 5Y568U94WL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MyAppleWatchCompanionApp;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = Katie.MyAppleWatchApp;
@@ -514,6 +517,7 @@
 				DEVELOPMENT_TEAM = 5Y568U94WL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MyAppleWatchCompanionApp;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = Katie.MyAppleWatchApp;
@@ -554,7 +558,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		35B8535C2AE1E22300875CCF /* Build configuration list for PBXNativeTarget "MyAppleWatchCompanionApp Watch App" */ = {
+		35B8535C2AE1E22300875CCF /* Build configuration list for PBXNativeTarget "MyAppleWatchCompanionApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				35B8535A2AE1E22300875CCF /* Debug */,
