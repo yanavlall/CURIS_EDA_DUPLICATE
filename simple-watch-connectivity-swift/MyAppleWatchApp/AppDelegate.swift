@@ -8,11 +8,6 @@ import SwiftUI
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            if let error = error {
-                print("Request authorization failed: \(error.localizedDescription)")
-            }
-        }
         EmpaticaAPI.initialize()
         return true
     }
