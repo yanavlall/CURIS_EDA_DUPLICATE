@@ -1,6 +1,6 @@
 //
 //  WatchSession.swift
-//  MyAppleWatchCompanionApp Watch App
+//  MyAppleWatchCompanionApp
 //
 
 import Foundation

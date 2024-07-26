@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  MyAppleWatchCompanionApp Watch App
+//  MyAppleWatchCompanionApp
 //
 
 import SwiftUI
