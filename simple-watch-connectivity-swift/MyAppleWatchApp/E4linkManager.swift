@@ -14,6 +14,22 @@ class E4linkManager: NSObject, ObservableObject {
     
     var ACCstruct = CSVlog(filename: "ACC.csv")
     
+    var baseline: Float = 0.0
+    var threshold: Float = 3.0
+    var flag: Bool = false
+    var featureDetected: Bool = false
+    var maintainFlag: Bool = false
+    var isCollectingInitialData: Bool = true
+    var GSRList: [Float] = []
+    var featureIndices: [(Int, Int)] = []
+    let oneMinuteBufferSize = 1 * 60 * 4
+    var samplingRate: Int = 4
+    let collectionDuration = 6 * 60 * 60 * 4 // Testing - 5 minutes, Actual - 6 hours
+    var current_index = 0
+    var feature_start = 0
+    var feature_end = 0
+    var lastFeatureCheckIndex = 0
+    
     var allDisconnected: Bool {
         return self.devices.reduce(true) { (value, device) -> Bool in
             value && device.deviceStatus == kDeviceStatusDisconnected
@@ -40,8 +56,8 @@ class E4linkManager: NSObject, ObservableObject {
         let content = UNMutableNotificationContent()
         content.title = "My notification title"
         content.body = "My notification body"
-        content.sound = .default // Ensure sound is set
-        content.badge = NSNumber(value: 1) // Optionally set badge
+        content.sound = .default // Ensure sound is set.
+        content.badge = NSNumber(value: 1) // Optionally set badge.
 
         let notification = UNNotificationRequest(identifier: "com.example.mynotification", content: content, trigger: nil)
         
@@ -146,12 +162,143 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         self.ACCstruct.appendData(x: x, y: y, z: z, withTimestamp: timestamp)
     }
     
-    func shouldSpike(newValue: Any) {
+    func didReceiveGSR(_ gsr: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
+        
+        let absGSR = abs(gsr)
+        GSRList.append(absGSR)
+        current_index += 1
+        print("EDA value : \(absGSR), Current Index: \(current_index)")
+        
+        // 6 hour Data Collection
+        if isCollectingInitialData {
+            if GSRList.count >= collectionDuration {
+                
+                isCollectingInitialData = false
+                
+                // Clean the signal before calculations
+                let smoothedSignal = smooth(signal: GSRList, windowSize: 20)
+                
+                threshold = calculateThreshold(from: GSRList)
+                
+                lastFeatureCheckIndex = current_index
+                print("Initial data collection completed. Baseline: \(baseline), Threshold: \(threshold), Time: \(current_index / oneMinuteBufferSize)")
+            }
+  
+            
+        // Real-time Feature detection starts
+        }
+            
+        if !featureDetected {
+            if (current_index - lastFeatureCheckIndex) % oneMinuteBufferSize == 0 {
+                lastFeatureCheckIndex = current_index
+                print("One Minute Passed, Feature Flag is down \(current_index), Time: \(current_index / oneMinuteBufferSize)")
+                if didDetectFeature(signal: GSRList, currentIndex: current_index) {
+                    featureDetected = true
+                    feature_start = current_index
+                    print("Feature detection started at index \(current_index), Time: \(current_index / oneMinuteBufferSize)")
+                    print("Flag up")
+                }
+            }
+        
+        } else {
+                if (current_index - feature_start) % oneMinuteBufferSize == 0 {
+                    print("One Minute Passed, Feature Flag is up at index:\(current_index), Time: \(current_index / oneMinuteBufferSize)")
+                    if !postFeatureCheck(signal: GSRList, currentIndex: current_index) {
+                        featureDetected = false
+                        feature_end = current_index
+                        print("Feature detection ended at index \(current_index), Time: \(current_index / oneMinuteBufferSize)")
+                        featureIndices.append((feature_start, feature_end))
+                }
+            }
+        }
+    }
+    
+           
+    
+    func calculateThreshold(from data: [Float]) -> Float {
+        let sortedData = data.sorted()
+        let perc25Index = Int(0.25 * Double(sortedData.count))
+        let perc75Index = Int(0.75 * Double(sortedData.count))
+        
+        let perc25 = sortedData[perc25Index]
+        let perc75 = sortedData[perc75Index]
+        
+        let filteredData = data.filter { $0 > perc25 && $0 < perc75 }
+        let threshold = filteredData.reduce(0, +) / Float(filteredData.count)
+        
+        print("Calculated Threshold: \(threshold)")
+        return threshold
+    }
+
+
+    // Implement Moving Average to Smooth the Signal
+    func smooth(signal: [Float], windowSize: Int) -> [Float] {
+        guard windowSize > 1 else { return signal }
+        var smoothedSignal: [Float] = []
+        for i in 0..<signal.count {
+            let start = max(0, i - windowSize / 2)
+            let end = min(signal.count, i + windowSize / 2)
+            let window = Array(signal[start..<end])
+            let average = window.reduce(0, +) / Float(window.count)
+            smoothedSignal.append(average)
+        }
+        return smoothedSignal
+    }
+    
+    // Go back  15 minutes in time, check if mean is over threshold throughout that period,
+    func didDetectFeature(signal: [Float], currentIndex: Int) -> Bool {
+       // let chunkSize = 5 * 60 * samplingRate - Actual
+       // let lookBackPeriod = 15 * 60 * samplingRate // 15 minutes in data points - Actual
+        
+        let chunkSize = 30 * samplingRate
+        let lookBackPeriod = 3 * 60 * samplingRate
+        
+        guard currentIndex >= lookBackPeriod else {
+            print("DidDetectFeature - Not enough data for feature detection at index \(currentIndex)")
+            return false
+        }
+        
+        // Clean the signal before calculations
+        let cleanedSignal = smooth(signal: signal, windowSize: 20)
+        
+        for i in 0..<6 { // CHANGE TO 3 WHEN DONE WITH TESTING
+            let chunkStart = currentIndex - lookBackPeriod + (i * chunkSize)
+            let chunkEnd = min(chunkStart + chunkSize, cleanedSignal.count)
+            let chunk = Array(cleanedSignal[chunkStart..<chunkEnd])
+            let meanChunk = chunk.reduce(0, +) / Float(chunk.count)
+            
+            print("Chunk \(i): mean = \(meanChunk), threshold = \(threshold), chunkStart = \(chunkStart), chunkEnd = \(chunkEnd)")
+
+            if meanChunk <= threshold {
+                return false
+            }
+        }
+        return true
         
     }
     
-    func didReceiveGSR(_ gsr: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
+    // Every one minute after the feature is detected, you check if the last 10 minutes had mean > threshold, keep doing this until not true
+    func postFeatureCheck(signal: [Float], currentIndex: Int) -> Bool {
+    //    let lookBackPeriod = 10 * 60 * samplingRate // 10 minutes in data points - Actual
+          let lookBackPeriod = 2 * 60 * samplingRate
         
+        guard currentIndex >= lookBackPeriod else {
+            print("postFeatureCheck - Not enough data for feature detection at index \(currentIndex)")
+            return false
+        }
+    
+        // Clean the signal before calculations
+        let cleanedSignal = smooth(signal: signal, windowSize: 20)
+        
+        let lookBackStart = currentIndex - lookBackPeriod
+        let lookBackEnd = currentIndex
+        let lookBackChunk = Array(cleanedSignal[lookBackStart..<lookBackEnd])
+        let meanChunk = lookBackChunk.reduce(0, +) / Float(lookBackChunk.count)
+        
+    if meanChunk > threshold {
+        print("PostFeatureChecking Continuing")
+    }
+        return meanChunk > threshold
     }
     
     func didUpdate( _ status: DeviceStatus, forDevice device: EmpaticaDeviceManager!) {

@@ -5,8 +5,8 @@
 
 import SwiftUI
 import UserNotifications
+import HealthKit
 
-@main
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Request notification authorization
@@ -22,6 +22,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // Set the delegate to self
         UNUserNotificationCenter.current().delegate = self
+        
+        // HealthKit workout start
+        let healthStore = HKHealthStore()
+        
+        let configuration = HKWorkoutConfiguration()
+        configuration.activityType = .running
+        configuration.locationType = .outdoor
+
+
+        healthStore.startWatchApp(with: configuration) { success, error in
+            if success {
+                print("Watch app started successfully.")
+            } else {
+                print("Failed to start watch app: \(String(describing: error))")
+            }
+        }
     
         EmpaticaAPI.initialize()
         return true

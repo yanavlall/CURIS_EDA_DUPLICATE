@@ -17,8 +17,14 @@
 		35C100272AE22CDE0044FBF0 /* WatchSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C100262AE22CDE0044FBF0 /* WatchSession.swift */; };
 		B6182D252C2F56E900D6DB74 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6182D242C2F56E900D6DB74 /* ContentView.swift */; };
 		B6182D272C2F572200D6DB74 /* WatchConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */; };
+		B677A9602C545AD700117CF2 /* WorkoutSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677A95F2C545AD700117CF2 /* WorkoutSession.swift */; };
+		B677A9642C545D0B00117CF2 /* MyAppleWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677A9622C545D0B00117CF2 /* MyAppleWatchApp.swift */; };
+		B677A9652C545D0B00117CF2 /* WorkoutSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677A9632C545D0B00117CF2 /* WorkoutSession.swift */; };
+		B677A9682C545FF500117CF2 /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677A9662C545FF500117CF2 /* WorkoutManager.swift */; };
+		B677A9692C545FF500117CF2 /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677A9662C545FF500117CF2 /* WorkoutManager.swift */; };
+		B677A96E2C5460D300117CF2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677A96D2C5460D300117CF2 /* AppDelegate.swift */; };
+		B677A9792C54657200117CF2 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = B677A9782C54657200117CF2 /* Zip */; };
 		B67ADD882C41BE070062906E /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67ADD872C41BE070062906E /* DataManager.swift */; };
-		B67ADD8C2C4262F30062906E /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = B67ADD8B2C4262F30062906E /* Zip */; };
 		B6CB44D42C3CAD0D00176951 /* E4link.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CB44D32C3CAD0D00176951 /* E4link.framework */; };
 		B6E3E6112C374289000DCE69 /* E4linkHeader.h in Sources */ = {isa = PBXBuildFile; fileRef = B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */; };
 		B6E3E6172C374903000DCE69 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6E3E6152C3748EF000DCE69 /* CoreBluetooth.framework */; };
@@ -54,7 +60,6 @@
 		35B853332AE1DDCA00875CCF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		35B853352AE1DDCA00875CCF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		35B8533C2AE1DDCD00875CCF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		35B853412AE1DDCD00875CCF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		35B8534B2AE1E22000875CCF /* MyAppleWatchCompanionApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyAppleWatchCompanionApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAppleWatchCompanionApp.swift; sourceTree = "<group>"; };
 		35B8534F2AE1E22000875CCF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -62,7 +67,13 @@
 		35C100262AE22CDE0044FBF0 /* WatchSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSession.swift; sourceTree = "<group>"; };
 		B6182D242C2F56E900D6DB74 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityManager.swift; sourceTree = "<group>"; };
-		B646EF472C52493B005F6C5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		B677A95E2C545AD700117CF2 /* MyAppleWatchCompanionApp.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = MyAppleWatchCompanionApp.entitlements; sourceTree = "<group>"; };
+		B677A95F2C545AD700117CF2 /* WorkoutSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutSession.swift; sourceTree = "<group>"; };
+		B677A9612C545D0B00117CF2 /* MyAppleWatchApp.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = MyAppleWatchApp.entitlements; sourceTree = "<group>"; };
+		B677A9622C545D0B00117CF2 /* MyAppleWatchApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyAppleWatchApp.swift; sourceTree = "<group>"; };
+		B677A9632C545D0B00117CF2 /* WorkoutSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutSession.swift; sourceTree = "<group>"; };
+		B677A9662C545FF500117CF2 /* WorkoutManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
+		B677A96D2C5460D300117CF2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B67ADD872C41BE070062906E /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		B6CB44D32C3CAD0D00176951 /* E4link.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = E4link.framework; sourceTree = "<group>"; };
 		B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = E4linkHeader.h; sourceTree = "<group>"; };
@@ -75,7 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B67ADD8C2C4262F30062906E /* Zip in Frameworks */,
+				B677A9792C54657200117CF2 /* Zip in Frameworks */,
 				B6E3E6172C374903000DCE69 /* CoreBluetooth.framework in Frameworks */,
 				B6CB44D42C3CAD0D00176951 /* E4link.framework in Frameworks */,
 			);
@@ -94,6 +105,7 @@
 		35B853272AE1DDCA00875CCF = {
 			isa = PBXGroup;
 			children = (
+				B677A9672C545FF500117CF2 /* Shared */,
 				35B853322AE1DDCA00875CCF /* MyAppleWatchApp */,
 				35B8534C2AE1E22000875CCF /* MyAppleWatchCompanionApp */,
 				35B853312AE1DDCA00875CCF /* Products */,
@@ -113,6 +125,9 @@
 		35B853322AE1DDCA00875CCF /* MyAppleWatchApp */ = {
 			isa = PBXGroup;
 			children = (
+				B677A9612C545D0B00117CF2 /* MyAppleWatchApp.entitlements */,
+				B677A9622C545D0B00117CF2 /* MyAppleWatchApp.swift */,
+				B677A9632C545D0B00117CF2 /* WorkoutSession.swift */,
 				35B853332AE1DDCA00875CCF /* AppDelegate.swift */,
 				35B853352AE1DDCA00875CCF /* SceneDelegate.swift */,
 				B6182D242C2F56E900D6DB74 /* ContentView.swift */,
@@ -121,7 +136,6 @@
 				B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */,
 				B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */,
 				35B8533C2AE1DDCD00875CCF /* Assets.xcassets */,
-				35B853412AE1DDCD00875CCF /* Info.plist */,
 			);
 			path = MyAppleWatchApp;
 			sourceTree = "<group>";
@@ -129,13 +143,23 @@
 		35B8534C2AE1E22000875CCF /* MyAppleWatchCompanionApp */ = {
 			isa = PBXGroup;
 			children = (
+				B677A95E2C545AD700117CF2 /* MyAppleWatchCompanionApp.entitlements */,
 				35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionApp.swift */,
+				B677A96D2C5460D300117CF2 /* AppDelegate.swift */,
 				35B8534F2AE1E22000875CCF /* ContentView.swift */,
 				35C100262AE22CDE0044FBF0 /* WatchSession.swift */,
+				B677A95F2C545AD700117CF2 /* WorkoutSession.swift */,
 				35B853512AE1E22200875CCF /* Assets.xcassets */,
-				B646EF472C52493B005F6C5E /* Info.plist */,
 			);
 			path = MyAppleWatchCompanionApp;
+			sourceTree = "<group>";
+		};
+		B677A9672C545FF500117CF2 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				B677A9662C545FF500117CF2 /* WorkoutManager.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		B6E3E6142C3748EF000DCE69 /* Frameworks */ = {
@@ -166,7 +190,7 @@
 			);
 			name = MyAppleWatchApp;
 			packageProductDependencies = (
-				B67ADD8B2C4262F30062906E /* Zip */,
+				B677A9782C54657200117CF2 /* Zip */,
 			);
 			productName = MyAppleWatchApp;
 			productReference = 35B853302AE1DDCA00875CCF /* MyAppleWatchApp.app */;
@@ -217,7 +241,7 @@
 			);
 			mainGroup = 35B853272AE1DDCA00875CCF;
 			packageReferences = (
-				B67ADD8A2C4262410062906E /* XCRemoteSwiftPackageReference "Zip" */,
+				B677A9772C54656300117CF2 /* XCRemoteSwiftPackageReference "Zip" */,
 			);
 			productRefGroup = 35B853312AE1DDCA00875CCF /* Products */;
 			projectDirPath = "";
@@ -253,11 +277,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B677A9642C545D0B00117CF2 /* MyAppleWatchApp.swift in Sources */,
 				35B853342AE1DDCA00875CCF /* AppDelegate.swift in Sources */,
 				B6182D252C2F56E900D6DB74 /* ContentView.swift in Sources */,
 				B6E3E6202C375B48000DCE69 /* E4linkManager.swift in Sources */,
 				B67ADD882C41BE070062906E /* DataManager.swift in Sources */,
+				B677A9652C545D0B00117CF2 /* WorkoutSession.swift in Sources */,
 				35B853362AE1DDCA00875CCF /* SceneDelegate.swift in Sources */,
+				B677A9682C545FF500117CF2 /* WorkoutManager.swift in Sources */,
 				B6182D272C2F572200D6DB74 /* WatchConnectivityManager.swift in Sources */,
 				B6E3E6112C374289000DCE69 /* E4linkHeader.h in Sources */,
 			);
@@ -267,8 +294,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B677A96E2C5460D300117CF2 /* AppDelegate.swift in Sources */,
 				35B853502AE1E22000875CCF /* ContentView.swift in Sources */,
 				35B8534E2AE1E22000875CCF /* MyAppleWatchCompanionApp.swift in Sources */,
+				B677A9692C545FF500117CF2 /* WorkoutManager.swift in Sources */,
+				B677A9602C545AD700117CF2 /* WorkoutSession.swift in Sources */,
 				35C100272AE22CDE0044FBF0 /* WatchSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -423,6 +453,8 @@
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/MyAppleWatchApp";
 				INFOPLIST_FILE = MyAppleWatchApp/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Connection to E4 Wristband";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Share Health Data";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Update Health Data";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
@@ -458,6 +490,8 @@
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/MyAppleWatchApp";
 				INFOPLIST_FILE = MyAppleWatchApp/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Connection to E4 Wristband";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Share Health Data";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Update Health Data";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
@@ -480,14 +514,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MyAppleWatchCompanionApp/MyAppleWatchCompanionApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 5Y568U94WL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = MyAppleWatchCompanionApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MyAppleWatchCompanionApp;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Share Health Data";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Update Health Data";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = Katie.MyAppleWatchApp;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -511,14 +548,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MyAppleWatchCompanionApp/MyAppleWatchCompanionApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 5Y568U94WL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = MyAppleWatchCompanionApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MyAppleWatchCompanionApp;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Share Health Data";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Update Health Data";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = Katie.MyAppleWatchApp;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -570,7 +610,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		B67ADD8A2C4262410062906E /* XCRemoteSwiftPackageReference "Zip" */ = {
+		B677A9772C54656300117CF2 /* XCRemoteSwiftPackageReference "Zip" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/marmelroy/Zip.git";
 			requirement = {
@@ -581,9 +621,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B67ADD8B2C4262F30062906E /* Zip */ = {
+		B677A9782C54657200117CF2 /* Zip */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B67ADD8A2C4262410062906E /* XCRemoteSwiftPackageReference "Zip" */;
+			package = B677A9772C54656300117CF2 /* XCRemoteSwiftPackageReference "Zip" */;
 			productName = Zip;
 		};
 /* End XCSwiftPackageProductDependency section */

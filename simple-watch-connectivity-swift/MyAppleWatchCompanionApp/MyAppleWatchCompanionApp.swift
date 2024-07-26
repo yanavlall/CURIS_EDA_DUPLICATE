@@ -7,9 +7,14 @@ import SwiftUI
 
 @main
 struct MyAppleWatchCompanionApp: App {
-    var body: some Scene {
+    @WKApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    
+    private let workoutManager = WorkoutManager.shared
+    
+    @SceneBuilder var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView().environmentObject(workoutManager)
         }
     }
 }
+

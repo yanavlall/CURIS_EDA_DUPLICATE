@@ -5,6 +5,9 @@
 
 import SwiftUI
 import WatchConnectivity
+import os
+import HealthKitUI
+import HealthKit
 
 struct ContentView: View {
     @ObservedObject var watchConnectivityManager = WatchConnectivityManager.shared
@@ -13,6 +16,23 @@ struct ContentView: View {
     //@State var showDisconnectAlert = false
     @State var showDisconnectedAlert = false
     @State var showDeleteAlert = false
+    
+    
+    @ObservedObject var workoutManager: WorkoutManager
+    @State private var didStartWorkout = false
+    @State private var triggerAuthorization = false
+    
+    private func startCyclingOnWatch() {
+        Task {
+            do {
+                try await workoutManager.startWatchWorkout(workoutType: .cycling)
+            } catch {
+                print("Failed to start cycling on the paired watch.")
+            }
+        }
+    }
+    
+    
     
     var screenWidth = UIScreen.main.bounds.size.width
     var screenHeight = UIScreen.main.bounds.size.height
@@ -185,18 +205,43 @@ struct ContentView: View {
                         .font(Font.system(.footnote, design: .rounded))
                 }
             }.padding(.top, 40)
+            
+            Button(action: {
+                if !workoutManager.sessionState.isActive {
+                    startCyclingOnWatch()
+                }
+                didStartWorkout = true
+            }) {
+                Text("Start Workout")
+            }
+            .healthDataAccessRequest(store: workoutManager.healthStore,
+                                     shareTypes: workoutManager.typesToShare,
+                                     readTypes: workoutManager.typesToRead,
+                                     trigger: triggerAuthorization,
+                                     completion: { result in
+                switch result {
+                case .success(let success):
+                    print("\(success) for authorization")
+                case .failure(let error):
+                    print("\(error) for authorization")
+                }
+            })
+            
+            Button(action: {
+                workoutManager.resetWorkout()
+                didStartWorkout = false
+            }) {
+                Text("End Workout")
+            }
         }
         .onAppear {
             e4linkManager.authenticate()
             dataManager.reloadFiles()
+            
+            triggerAuthorization.toggle()
+            workoutManager.retrieveRemoteSession()
         }
         .background(Color.black)
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
     }
 }
 
