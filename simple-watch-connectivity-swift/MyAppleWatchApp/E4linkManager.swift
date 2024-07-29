@@ -210,6 +210,10 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                             print("Failed to start cycling on the paired watch.")
                         }
                     }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                        print("DISPATCHED")
+                        workoutManager.resetWorkout()
+                    }
                 }
             }
         
@@ -228,6 +232,10 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                         } catch {
                             print("Failed to start cycling on the paired watch.")
                         }
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                        print("DISPATCHED")
+                        workoutManager.resetWorkout()
                     }
                 }
             }
