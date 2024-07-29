@@ -9,7 +9,7 @@ import SwiftUI
 struct MyAppleWatchCompanionApp: App {
     @WKApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     
-    private let workoutManager = WorkoutManager.shared
+    let workoutManager = WorkoutManager.shared
     
     @SceneBuilder var body: some Scene {
         WindowGroup {

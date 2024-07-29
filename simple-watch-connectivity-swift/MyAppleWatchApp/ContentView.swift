@@ -17,21 +17,8 @@ struct ContentView: View {
     //@State var showDisconnectedAlert = false
     @State var showDeleteAlert = false
     
-    
     @EnvironmentObject var workoutManager: WorkoutManager
     @State private var triggerAuthorization = false
-    
-    private func startCyclingOnWatch() {
-        Task {
-            do {
-                try await workoutManager.startWatchWorkout(workoutType: .cycling)
-            } catch {
-                print("Failed to start cycling on the paired watch.")
-            }
-        }
-    }
-    
-    
     
     var screenWidth = UIScreen.main.bounds.size.width
     var screenHeight = UIScreen.main.bounds.size.height
@@ -207,7 +194,13 @@ struct ContentView: View {
             
             Button(action: {
                 if !workoutManager.sessionState.isActive {
-                    startCyclingOnWatch()
+                    Task {
+                        do {
+                            try await workoutManager.startWatchWorkout(workoutType: .cycling)
+                        } catch {
+                            print("Failed to start cycling on the paired watch.")
+                        }
+                    }
                 }
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 10) {

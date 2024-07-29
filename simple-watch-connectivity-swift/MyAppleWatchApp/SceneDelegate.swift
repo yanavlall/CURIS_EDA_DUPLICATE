@@ -7,7 +7,7 @@ import SwiftUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
-    private let workoutManager = WorkoutManager.shared          // change?
+    let workoutManager = WorkoutManager.shared          // change?
 
     var window: UIWindow?
 

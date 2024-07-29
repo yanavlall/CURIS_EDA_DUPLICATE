@@ -165,12 +165,13 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         self.ACCstruct.appendData(x: x, y: y, z: z, withTimestamp: timestamp)
     }
     
+    @MainActor
     func didReceiveGSR(_ gsr: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
-        DispatchQueue.main.async {
-            self.absGSR = abs(gsr)
-            self.GSRList.append(self.absGSR)
-            self.current_index += 1
-        }
+        let workoutManager = WorkoutManager.shared
+
+        absGSR = abs(gsr)
+        GSRList.append(absGSR)
+        current_index += 1
         print("EDA value : \(absGSR), Current Index: \(current_index)")
         
         // 6 hour Data Collection
@@ -182,9 +183,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                 // Clean the signal before calculations
                 let cleanedSignal = smooth(signal: GSRList, windowSize: 20)
                 
-                DispatchQueue.main.async {
-                    self.threshold = self.calculateThreshold(from: cleanedSignal)
-                }
+                threshold = calculateThreshold(from: cleanedSignal)
                 
                 lastFeatureCheckIndex = current_index
                 print("Initial data collection completed. Baseline: \(baseline), Threshold: \(threshold), Time: \(current_index / oneMinuteBufferSize)")
@@ -199,26 +198,16 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                 lastFeatureCheckIndex = current_index
                 print("One Minute Passed, Feature Flag is down \(current_index), Time: \(current_index / oneMinuteBufferSize)")
                 if didDetectFeature(signal: GSRList, currentIndex: current_index) {
-                    DispatchQueue.main.async {
-                        self.featureDetected = true
-                    }
+                    featureDetected = true
                     feature_start = current_index
                     print("Feature detection started at index \(current_index), Time: \(current_index / oneMinuteBufferSize)")
                     print("Flag up")
                     
-                    // CLEAN LATER ???
-                    let healthStore = HKHealthStore()
-                    
-                    let configuration = HKWorkoutConfiguration()
-                    configuration.activityType = .running
-                    configuration.locationType = .outdoor
-
-
-                    healthStore.startWatchApp(with: configuration) { success, error in
-                        if success {
-                            print("Watch app started successfully.")
-                        } else {
-                            print("Failed to start watch app: \(String(describing: error))")
+                    Task {
+                        do {
+                            try await workoutManager.startWatchWorkout(workoutType: .cycling)
+                        } catch {
+                            print("Failed to start cycling on the paired watch.")
                         }
                     }
                 }
@@ -228,25 +217,16 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             if (current_index - feature_start) % oneMinuteBufferSize == 0 {
                 print("One Minute Passed, Feature Flag is up at index:\(current_index), Time: \(current_index / oneMinuteBufferSize)")
                 if !postFeatureCheck(signal: GSRList, currentIndex: current_index) {
-                    DispatchQueue.main.async {
-                        self.featureDetected = false
-                    }
+                    featureDetected = false
                     feature_end = current_index
                     print("Feature detection ended at index \(current_index), Time: \(current_index / oneMinuteBufferSize)")
                     featureIndices.append((feature_start, feature_end))
                     
-                    let healthStore = HKHealthStore()
-                    
-                    let configuration = HKWorkoutConfiguration()
-                    configuration.activityType = .running
-                    configuration.locationType = .outdoor
-
-
-                    healthStore.startWatchApp(with: configuration) { success, error in
-                        if success {
-                            print("Watch app started successfully.")
-                        } else {
-                            print("Failed to start watch app: \(String(describing: error))")
+                    Task {
+                        do {
+                            try await workoutManager.startWatchWorkout(workoutType: .cycling)
+                        } catch {
+                            print("Failed to start cycling on the paired watch.")
                         }
                     }
                 }
