@@ -13,9 +13,8 @@ struct ContentView: View {
         Text("Notification!")
             .fontWeight(.semibold)
             .onAppear {
-                workoutManager.requestAuthorization()
-            }
+            workoutManager.requestAuthorization()
+        }
     }
-    
 }
 

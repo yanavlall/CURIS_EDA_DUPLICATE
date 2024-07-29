@@ -13,13 +13,12 @@ struct ContentView: View {
     @ObservedObject var watchConnectivityManager = WatchConnectivityManager.shared
     @ObservedObject var e4linkManager = E4linkManager.shared
     @ObservedObject var dataManager = DataManager.shared
-    //@State var showDisconnectAlert = false
-    @State var showDisconnectedAlert = false
+    @State var showDisconnectAlert = false
+    //@State var showDisconnectedAlert = false
     @State var showDeleteAlert = false
     
     
-    @ObservedObject var workoutManager: WorkoutManager
-    @State private var didStartWorkout = false
+    @EnvironmentObject var workoutManager: WorkoutManager
     @State private var triggerAuthorization = false
     
     private func startCyclingOnWatch() {
@@ -73,7 +72,7 @@ struct ContentView: View {
                                 .font(.caption)
                                 .foregroundColor(.white)
                         }
-                        .onChange(of: e4linkManager.deviceStatus) { oldState, newState in
+                        /*.onChange(of: e4linkManager.deviceStatus) { oldState, newState in
                             if newState == "Disconnected" {
                                 showDisconnectedAlert = true
                             }
@@ -84,7 +83,7 @@ struct ContentView: View {
                                 message: Text("\(device.name ?? "") has been disconnected. Rediscovering..."),
                                 dismissButton: .default(Text("OK"))
                             )
-                        }
+                        }*/
                         Spacer()
                         Button(action: {
                             e4linkManager.select(device: device)
@@ -109,7 +108,7 @@ struct ContentView: View {
                             
                         }
                     }
-                    /*.alert(isPresented: $showDisconnectAlert) {
+                    .alert(isPresented: $showDisconnectAlert) {
                         Alert(
                             title: Text("Disconnect from E4 Device"),
                             message: Text("Are you sure you want to disconnect?"),
@@ -119,7 +118,7 @@ struct ContentView: View {
                             }),
                             secondaryButton: .default(Text("No"))
                         )
-                    }*/
+                    }
                     .padding(.horizontal, 20)
                 }
             }
@@ -204,13 +203,18 @@ struct ContentView: View {
                         .cornerRadius(15)
                         .font(Font.system(.footnote, design: .rounded))
                 }
-            }.padding(.top, 40)
+            }.padding(.vertical, 40)
             
             Button(action: {
                 if !workoutManager.sessionState.isActive {
                     startCyclingOnWatch()
                 }
-                didStartWorkout = true
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                    print("DISPATCHED")
+                    workoutManager.resetWorkout()
+                }
+                
             }) {
                 Text("Start Workout")
             }
@@ -226,20 +230,18 @@ struct ContentView: View {
                     print("\(error) for authorization")
                 }
             })
+            .padding()
             
-            Button(action: {
-                workoutManager.resetWorkout()
-                didStartWorkout = false
-            }) {
-                Text("End Workout")
-            }
+            Text("EDA Value: \(e4linkManager.absGSR)")
+            Text("Threshold: \(Int(e4linkManager.threshold))")
+            Text("List Length: \(e4linkManager.GSRList.count)")
+            Text("Time: \(e4linkManager.current_index / e4linkManager.oneMinuteBufferSize) minute(s)")
+            Text("Feature Flag: \(e4linkManager.featureDetected)")
         }
         .onAppear {
             e4linkManager.authenticate()
             dataManager.reloadFiles()
-            
             triggerAuthorization.toggle()
-            workoutManager.retrieveRemoteSession()
         }
         .background(Color.black)
     }

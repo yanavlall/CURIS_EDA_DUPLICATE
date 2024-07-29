@@ -9,7 +9,6 @@ import HealthKit
 import SwiftUI
 
 class AppDelegate: NSObject, WKApplicationDelegate {
-
     func handle(_ workoutConfiguration: HKWorkoutConfiguration) {
         Task {
             do {

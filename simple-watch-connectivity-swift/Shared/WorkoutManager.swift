@@ -10,46 +10,26 @@ import HealthKit
 
 @MainActor
 class WorkoutManager: NSObject, ObservableObject {
-    struct SessionSateChange {
+    struct SessionStateChange {
         let newState: HKWorkoutSessionState
         let date: Date
     }
-    /**
-     The workout session live states that the UI observes.
-     */
+    
     @Published var sessionState: HKWorkoutSessionState = .notStarted
-    @Published var elapsedTimeInterval: TimeInterval = 0
-    /**
-     SummaryView (watchOS) changes from Saving Workout to the metric summary view when
-     a workout changes from nil to a valid value.
-     */
     @Published var workout: HKWorkout?
     /**
      HealthKit data types to share and read.
      */
     let typesToShare: Set = [HKQuantityType.workoutType()]
-    let typesToRead: Set = [
-        HKQuantityType.workoutType(),
-        HKObjectType.activitySummaryType()
-    ]
+    let typesToRead: Set = [HKQuantityType.workoutType()]
     let healthStore = HKHealthStore()
     var session: HKWorkoutSession?
-    #if os(watchOS)
-    /**
-     The live workout builder that is only available on watchOS.
-     */
-    var builder: HKLiveWorkoutBuilder?
-    #else
-    /**
-     A date for synchronizing the elapsed time between iOS and watchOS.
-     */
-    var contextDate: Date?
-    #endif
+
     /**
      Creates an async stream that buffers a single newest element, and the stream's continuation to yield new elements synchronously to the stream.
      The Swift actors don't handle tasks in a first-in-first-out way. Use AsyncStream to make sure that the app presents the latest state.
      */
-    let asynStreamTuple = AsyncStream.makeStream(of: SessionSateChange.self, bufferingPolicy: .bufferingNewest(1))
+    let asynStreamTuple = AsyncStream.makeStream(of: SessionStateChange.self, bufferingPolicy: .bufferingNewest(1))
     /**
      WorkoutManager is a singleton.
      */
@@ -70,35 +50,18 @@ class WorkoutManager: NSObject, ObservableObject {
     /**
      Consume the session state change from the async stream to update sessionState and finish the workout.
      */
-    private func consumeSessionStateChange(_ change: SessionSateChange) async {
+    private func consumeSessionStateChange(_ change: SessionStateChange) async {
         sessionState = change.newState
         /**
           Wait for the session to transition states before ending the builder.
          */
         #if os(watchOS)
-        /**
-         Send the elapsed time to the iOS side.
-         */
-        let elapsedTimeInterval = session?.associatedWorkoutBuilder().elapsedTime(at: change.date) ?? 0
-        let elapsedTime = WorkoutElapsedTime(timeInterval: elapsedTimeInterval, date: change.date)
-        if let elapsedTimeData = try? JSONEncoder().encode(elapsedTime) {
-            await sendData(elapsedTimeData)
-        }
 
-        guard change.newState == .stopped, let builder else {
+        guard change.newState == .stopped else {
             return
         }
-
-        let finishedWorkout: HKWorkout?
-        do {
-            try await builder.endCollection(at: change.date)
-            finishedWorkout = try await builder.finishWorkout()
-            session?.end()
-        } catch {
-            print("Failed to end workout: \(error))")
-            return
-        }
-        workout = finishedWorkout
+        print("END SESSION")
+        session?.end()
         #endif
     }
 }
@@ -107,20 +70,9 @@ class WorkoutManager: NSObject, ObservableObject {
 //
 extension WorkoutManager {
     func resetWorkout() {
-        #if os(watchOS)
-        builder = nil
-        #endif
-        workout = nil
+        print("RESET")
         session = nil
         sessionState = .notStarted
-    }
-    
-    func sendData(_ data: Data) async {
-        do {
-            try await session?.sendToRemoteWorkoutSession(data: data)
-        } catch {
-            print("Failed to send data: \(error)")
-        }
     }
 }
 
@@ -139,8 +91,8 @@ extension WorkoutManager: HKWorkoutSessionDelegate {
          Yield the new state change to the async stream synchronously.
          asynStreamTuple is a constant, so it's nonisolated.
          */
-        let sessionSateChange = SessionSateChange(newState: toState, date: date)
-        asynStreamTuple.continuation.yield(sessionSateChange)
+        let sessionStateChange = SessionStateChange(newState: toState, date: date)
+        asynStreamTuple.continuation.yield(sessionStateChange)
     }
         
     nonisolated func workoutSession(_ workoutSession: HKWorkoutSession,
@@ -172,14 +124,6 @@ extension WorkoutManager: HKWorkoutSessionDelegate {
     }
 }
 
-
-
-// MARK: - A structure for synchronizing the elapsed time.
-//
-struct WorkoutElapsedTime: Codable {
-    var timeInterval: TimeInterval
-    var date: Date
-}
 
 // MARK: - Convenient workout state
 //

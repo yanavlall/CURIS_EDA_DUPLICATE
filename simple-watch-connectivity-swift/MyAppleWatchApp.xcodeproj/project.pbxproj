@@ -127,13 +127,13 @@
 			children = (
 				B677A9612C545D0B00117CF2 /* MyAppleWatchApp.entitlements */,
 				B677A9622C545D0B00117CF2 /* MyAppleWatchApp.swift */,
-				B677A9632C545D0B00117CF2 /* WorkoutSession.swift */,
 				35B853332AE1DDCA00875CCF /* AppDelegate.swift */,
 				35B853352AE1DDCA00875CCF /* SceneDelegate.swift */,
 				B6182D242C2F56E900D6DB74 /* ContentView.swift */,
 				B6E3E61F2C375B48000DCE69 /* E4linkManager.swift */,
 				B67ADD872C41BE070062906E /* DataManager.swift */,
 				B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */,
+				B677A9632C545D0B00117CF2 /* WorkoutSession.swift */,
 				B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */,
 				35B8533C2AE1DDCD00875CCF /* Assets.xcassets */,
 			);

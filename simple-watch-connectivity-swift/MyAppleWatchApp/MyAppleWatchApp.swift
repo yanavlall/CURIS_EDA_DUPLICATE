@@ -14,7 +14,7 @@ struct MyAppleWatchApp: App {
     var body: some Scene {
         WindowGroup {
             if UIDevice.current.userInterfaceIdiom == .phone {
-                ContentView(workoutManager: workoutManager)
+                ContentView().environmentObject(workoutManager)
             }
         }
     }

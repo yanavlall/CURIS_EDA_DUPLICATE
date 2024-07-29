@@ -7,7 +7,7 @@ import SwiftUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
-    private let workoutManager = WorkoutManager.shared              // change later??
+    private let workoutManager = WorkoutManager.shared          // change?
 
     var window: UIWindow?
 
@@ -16,7 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         
         // Create the SwiftUI view that provides the window contents.
-        let contentView = ContentView(workoutManager: workoutManager)   // change later??
+        let contentView = ContentView().environmentObject(workoutManager)
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
