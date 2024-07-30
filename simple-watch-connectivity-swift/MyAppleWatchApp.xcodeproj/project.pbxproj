@@ -456,6 +456,7 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Share Health Data";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Update Health Data";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -463,7 +464,7 @@
 					"@executable_path",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Katie.MyAppleWatchApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MyCURIS19137AppleWatchApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = MyAppleWatchApp/E4linkHeader.h;
@@ -493,6 +494,7 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Share Health Data";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Update Health Data";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -500,7 +502,7 @@
 					"@executable_path",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Katie.MyAppleWatchApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MyCURIS19137AppleWatchApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = MyAppleWatchApp/E4linkHeader.h;
@@ -526,13 +528,14 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Share Health Data";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Update Health Data";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = Katie.MyAppleWatchApp;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MyCURIS19137AppleWatchApp;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Katie.MyAppleWatchApp.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MyCURIS19137AppleWatchApp.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = NO;
@@ -560,13 +563,14 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Share Health Data";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Update Health Data";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = Katie.MyAppleWatchApp;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MyCURIS19137AppleWatchApp;
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Katie.MyAppleWatchApp.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MyCURIS19137AppleWatchApp.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = NO;
