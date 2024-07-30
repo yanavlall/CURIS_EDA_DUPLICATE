@@ -24,10 +24,11 @@ class E4linkManager: NSObject, ObservableObject {
     @Published var batteryLevel: Float = 0.0
     
     @Published var absGSR: Float = 0.0
-    @Published var threshold: Float = 1.0
+    @Published var threshold: Float = 3.0
     @Published var GSRList: [Float] = []
     @Published var current_index = 0
     @Published var featureDetected: Bool = false
+    @Published var shouldPersistData: Bool = true
     
     var baseline: Float = 0.0
     var flag: Bool = false
@@ -185,11 +186,13 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             self.GSRList.append(self.absGSR)
             self.current_index += 1
         }
-        Task {
-            do {
-                try await self.save(gsrList: self.GSRList)
-            } catch {
-                fatalError(error.localizedDescription)
+        if shouldPersistData {
+            Task {
+                do {
+                    try await self.save(gsrList: self.GSRList)
+                } catch {
+                    fatalError(error.localizedDescription)
+                }
             }
         }
         print("EDA value : \(absGSR), Current Index: \(current_index)")
@@ -209,9 +212,12 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                 
                 lastFeatureCheckIndex = current_index
                 print("Initial data collection completed. Baseline: \(baseline), Threshold: \(threshold), Time: \(current_index / oneMinuteBufferSize)")
+                
+                // Stop persisting data after reaching collectionDuration
+                DispatchQueue.main.async {
+                  self.shouldPersistData = false
+                }
             }
-  
-            
         // Real-time Feature detection starts
         }
             
@@ -278,10 +284,10 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         let perc75 = sortedData[perc75Index]
         
         let filteredData = data.filter { $0 > perc25 && $0 < perc75 }
-        let threshold = filteredData.reduce(0, +) / Float(filteredData.count)
+        let baseline = filteredData.reduce(0, +) / Float(filteredData.count)
         
-        print("Calculated Threshold: \(threshold)")
-        return threshold
+        print("Calculated Threshold: \(1.2 * baseline)")
+        return 1.2 * baseline
     }
 
 
@@ -301,11 +307,11 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     
     // Go back  15 minutes in time, check if mean is over threshold throughout that period,
     func didDetectFeature(signal: [Float], currentIndex: Int) -> Bool {
-       // let chunkSize = 5 * 60 * samplingRate - Actual
-       // let lookBackPeriod = 15 * 60 * samplingRate // 15 minutes in data points - Actual
+        let chunkSize = 5 * 60 * samplingRate
+        let lookBackPeriod = 15 * 60 * samplingRate // 15 minutes in data points - Actual
         
-        let chunkSize = 30 * samplingRate
-        let lookBackPeriod = 3 * 60 * samplingRate
+        // let chunkSize = 30 * samplingRate
+        // let lookBackPeriod = 3 * 60 * samplingRate
         
         guard currentIndex >= lookBackPeriod else {
             print("DidDetectFeature - Not enough data for feature detection at index \(currentIndex)")
@@ -315,7 +321,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         // Clean the signal before calculations
         let cleanedSignal = smooth(signal: signal, windowSize: 20)
         
-        for i in 0..<6 { // CHANGE TO 3 WHEN DONE WITH TESTING
+        for i in 0..<3 { // CHANGE TO 3 WHEN DONE WITH TESTING
             let chunkStart = currentIndex - lookBackPeriod + (i * chunkSize)
             let chunkEnd = min(chunkStart + chunkSize, cleanedSignal.count)
             let chunk = Array(cleanedSignal[chunkStart..<chunkEnd])
@@ -333,8 +339,8 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     
     // Every one minute after the feature is detected, you check if the last 10 minutes had mean > threshold, keep doing this until not true
     func postFeatureCheck(signal: [Float], currentIndex: Int) -> Bool {
-    //    let lookBackPeriod = 10 * 60 * samplingRate // 10 minutes in data points - Actual
-          let lookBackPeriod = 2 * 60 * samplingRate
+        let lookBackPeriod = 10 * 60 * samplingRate // 10 minutes in data points - Actual
+    //  let lookBackPeriod = 2 * 60 * samplingRate
         
         guard currentIndex >= lookBackPeriod else {
             print("postFeatureCheck - Not enough data for feature detection at index \(currentIndex)")
