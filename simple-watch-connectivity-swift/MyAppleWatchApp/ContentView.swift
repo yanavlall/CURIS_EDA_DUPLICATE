@@ -58,6 +58,16 @@ struct ContentView: View {
                             Text("Status: \(e4linkManager.deviceStatus)")
                                 .font(.caption)
                                 .foregroundColor(.white)
+                            if (e4linkManager.deviceStatus == "Disconnected") {
+                                Text("Battery: n/a")
+                                    .font(.caption)
+                                    .foregroundColor(.white)
+                            } else {
+                                Text("Battery: \(e4linkManager.batteryLevel)")
+                                    .font(.caption)
+                                    .foregroundColor(.white)
+                            }
+                            
                         }
                         /*.onChange(of: e4linkManager.deviceStatus) { oldState, newState in
                             if newState == "Disconnected" {
@@ -73,7 +83,11 @@ struct ContentView: View {
                         }*/
                         Spacer()
                         Button(action: {
-                            e4linkManager.select(device: device)
+                            if e4linkManager.deviceStatus == "Disconnected" {
+                                e4linkManager.select(device: device)
+                            } else {
+                                showDisconnectAlert = true
+                            }
                         }) {
                             if (e4linkManager.deviceStatus == "Disconnected") {
                                 Text("Connect")
@@ -108,6 +122,25 @@ struct ContentView: View {
                     }
                     .padding(.horizontal, 20)
                 }
+            }
+            if (e4linkManager.deviceStatus == "Connected") {
+                VStack(alignment: .leading) {
+                    Text("EDA Value: \(e4linkManager.absGSR)")
+                        .font(.caption).monospaced()
+                    Text("Threshold: \(e4linkManager.threshold)")
+                        .font(.caption).monospaced()
+                    Text("List Length: \(e4linkManager.GSRList.count)")
+                        .font(.caption).monospaced()
+                    Text("Time: \(e4linkManager.current_index / e4linkManager.oneMinuteBufferSize) minute(s)")
+                        .font(.caption).monospaced()
+                    Text("Feature Flag: \(e4linkManager.featureDetected)")
+                        
+                }
+                .font(.caption).monospaced()
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 5)
+                .padding(.horizontal, 20)
             }
             HStack(alignment: .firstTextBaseline) {
                 Text("Files")
@@ -180,6 +213,44 @@ struct ContentView: View {
                 }
                 
                 Button(action: {
+                    if !workoutManager.sessionState.isActive {
+                        Task {
+                            do {
+                                try await workoutManager.startWatchWorkout(workoutType: .cycling)
+                            } catch {
+                                print("Failed to start cycling on the paired watch.")
+                            }
+                        }
+                    }
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                        print("DISPATCHED")
+                        workoutManager.resetWorkout()
+                    }
+                    
+                }) {
+                    Text("Start Workout")
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 10)
+                        .foregroundColor(.white)
+                        .background(Color(red: 0.13333333333, green: 0.43921568627, blue: 0.70980392156))
+                        .cornerRadius(15)
+                        .font(Font.system(.footnote, design: .rounded))
+                }
+                .healthDataAccessRequest(store: workoutManager.healthStore,
+                                         shareTypes: workoutManager.typesToShare,
+                                         readTypes: workoutManager.typesToRead,
+                                         trigger: triggerAuthorization,
+                                         completion: { result in
+                    switch result {
+                    case .success(let success):
+                        print("\(success) for authorization")
+                    case .failure(let error):
+                        print("\(error) for authorization")
+                    }
+                })
+                
+                /*Button(action: {
                     watchConnectivityManager.sendDataFromPhonePt2()
                 }) {
                     Text("Send Data Pt. 2")
@@ -189,52 +260,21 @@ struct ContentView: View {
                         .background(Color(red: 0.13333333333, green: 0.43921568627, blue: 0.70980392156))
                         .cornerRadius(15)
                         .font(Font.system(.footnote, design: .rounded))
-                }
+                }*/
             }.padding(.vertical, 40)
             
-            Button(action: {
-                if !workoutManager.sessionState.isActive {
-                    Task {
-                        do {
-                            try await workoutManager.startWatchWorkout(workoutType: .cycling)
-                        } catch {
-                            print("Failed to start cycling on the paired watch.")
-                        }
-                    }
-                }
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-                    print("DISPATCHED")
-                    workoutManager.resetWorkout()
-                }
-                
-            }) {
-                Text("Start Workout")
-            }
-            .healthDataAccessRequest(store: workoutManager.healthStore,
-                                     shareTypes: workoutManager.typesToShare,
-                                     readTypes: workoutManager.typesToRead,
-                                     trigger: triggerAuthorization,
-                                     completion: { result in
-                switch result {
-                case .success(let success):
-                    print("\(success) for authorization")
-                case .failure(let error):
-                    print("\(error) for authorization")
-                }
-            })
-            .padding()
-            
-            Text("EDA Value: \(e4linkManager.absGSR)")
-            Text("Threshold: \(Int(e4linkManager.threshold))")
-            Text("List Length: \(e4linkManager.GSRList.count)")
-            Text("Time: \(e4linkManager.current_index / e4linkManager.oneMinuteBufferSize) minute(s)")
-            Text("Feature Flag: \(e4linkManager.featureDetected)")
         }
         .onAppear {
             e4linkManager.authenticate()
             dataManager.reloadFiles()
             triggerAuthorization.toggle()
+            Task {
+                do {
+                    try await e4linkManager.load()
+                } catch {
+                    fatalError(error.localizedDescription)
+                }
+            }
         }
         .background(Color.black)
     }

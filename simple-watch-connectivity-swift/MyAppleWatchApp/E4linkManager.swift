@@ -13,7 +13,15 @@ class E4linkManager: NSObject, ObservableObject {
     @Published var devices: [EmpaticaDeviceManager] = []
     @Published var deviceStatus = "Disconnected"
     
+    var EDAstruct = CSVlog(filename: "EDA.csv")
+    var BVPstruct = CSVlog(filename: "BVP.csv")
+    var TEMPstruct = CSVlog(filename: "TEMP.csv")
     var ACCstruct = CSVlog(filename: "ACC.csv")
+    var IBIstruct = CSVlog(filename: "IBI.csv")
+    var TAGstruct = CSVlog(filename: "TAG.csv")
+    var FEATUREstruct = CSVlog(filename: "FEATURE.csv")
+    
+    @Published var batteryLevel: Float = 0.0
     
     @Published var absGSR: Float = 0.0
     @Published var threshold: Float = 1.0
@@ -54,11 +62,11 @@ class E4linkManager: NSObject, ObservableObject {
         }
     }
     
-    func notify() {
+    func notify(title: String, body: String) {
         let center = UNUserNotificationCenter.current()
         let content = UNMutableNotificationContent()
-        content.title = "My notification title"
-        content.body = "My notification body"
+        content.title = title
+        content.body = body
         content.sound = .default // Ensure sound is set.
         content.badge = NSNumber(value: 1) // Optionally set badge.
 
@@ -161,17 +169,29 @@ extension E4linkManager: EmpaticaDelegate {
 }
 
 extension E4linkManager: EmpaticaDeviceDelegate {
-    func didReceiveAccelerationX(_ x: Int8, y: Int8, z: Int8, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
-        self.ACCstruct.appendData(x: x, y: y, z: z, withTimestamp: timestamp)
-    }
-    
     @MainActor
     func didReceiveGSR(_ gsr: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
         let workoutManager = WorkoutManager.shared
+        
+        if (!EDAstruct.headerSet) {
+            EDAstruct.content.append(String(timestamp)+"\n")
+            EDAstruct.content.append("4.000000"+"\n")
+            EDAstruct.headerSet = true
+        }
+        EDAstruct.content.append(String(absGSR)+"\n")
 
-        absGSR = abs(gsr)
-        GSRList.append(absGSR)
-        current_index += 1
+        DispatchQueue.main.async {
+            self.absGSR = abs(gsr)
+            self.GSRList.append(self.absGSR)
+            self.current_index += 1
+        }
+        Task {
+            do {
+                try await self.save(gsrList: self.GSRList)
+            } catch {
+                fatalError(error.localizedDescription)
+            }
+        }
         print("EDA value : \(absGSR), Current Index: \(current_index)")
         
         // 6 hour Data Collection
@@ -183,7 +203,9 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                 // Clean the signal before calculations
                 let cleanedSignal = smooth(signal: GSRList, windowSize: 20)
                 
-                threshold = calculateThreshold(from: cleanedSignal)
+                DispatchQueue.main.async {
+                    self.threshold = self.calculateThreshold(from: cleanedSignal)
+                }
                 
                 lastFeatureCheckIndex = current_index
                 print("Initial data collection completed. Baseline: \(baseline), Threshold: \(threshold), Time: \(current_index / oneMinuteBufferSize)")
@@ -198,7 +220,9 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                 lastFeatureCheckIndex = current_index
                 print("One Minute Passed, Feature Flag is down \(current_index), Time: \(current_index / oneMinuteBufferSize)")
                 if didDetectFeature(signal: GSRList, currentIndex: current_index) {
-                    featureDetected = true
+                    DispatchQueue.main.async {
+                        self.featureDetected = true
+                    }
                     feature_start = current_index
                     print("Feature detection started at index \(current_index), Time: \(current_index / oneMinuteBufferSize)")
                     print("Flag up")
@@ -221,9 +245,12 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             if (current_index - feature_start) % oneMinuteBufferSize == 0 {
                 print("One Minute Passed, Feature Flag is up at index:\(current_index), Time: \(current_index / oneMinuteBufferSize)")
                 if !postFeatureCheck(signal: GSRList, currentIndex: current_index) {
-                    featureDetected = false
+                    DispatchQueue.main.async {
+                        self.featureDetected = false
+                    }
                     feature_end = current_index
                     print("Feature detection ended at index \(current_index), Time: \(current_index / oneMinuteBufferSize)")
+                    FEATUREstruct.content.append(String(feature_start)+","+String(feature_end)+"\n")
                     featureIndices.append((feature_start, feature_end))
                     
                     Task {
@@ -241,8 +268,6 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             }
         }
     }
-    
-           
     
     func calculateThreshold(from data: [Float]) -> Float {
         let sortedData = data.sorted()
@@ -330,11 +355,64 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         return meanChunk > threshold
     }
     
+    func didReceiveBVP(_ bvp: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
+        if (!BVPstruct.headerSet) {
+            BVPstruct.content.append(String(timestamp)+"\n")
+            BVPstruct.content.append("64.000000"+"\n")
+            BVPstruct.headerSet = true
+        }
+        BVPstruct.content.append(String(bvp)+"\n")
+    }
+    
+    func didReceiveTemperature(_ temp: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
+        if (!TEMPstruct.headerSet) {
+            TEMPstruct.content.append(String(timestamp)+"\n")
+            TEMPstruct.content.append("4.000000"+"\n")
+            TEMPstruct.headerSet = true
+        }
+        TEMPstruct.content.append(String(temp)+"\n")
+    }
+    
+    func didReceiveAccelerationX(_ x: Int8, y: Int8, z: Int8, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
+        if (!ACCstruct.headerSet) {
+            ACCstruct.content.append(String(timestamp)+"\n")
+            ACCstruct.content.append("32.000000, 32.000000, 32.000000"+"\n")
+            ACCstruct.headerSet = true
+        }
+        ACCstruct.content.append(String(x)+","+String(y)+","+String(z)+"\n")
+    }
+    
+    func didReceiveIBI(_ ibi: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
+        if (!IBIstruct.headerSet) {
+            IBIstruct.content.append(String(timestamp)+", IBI\n")
+            IBIstruct.headerSet = true
+        }
+        if (IBIstruct.prevSet) {
+            let diff = ibi - IBIstruct.prev
+            IBIstruct.content.append(String(ibi)+","+String(diff))
+            IBIstruct.prev = ibi
+        } else {
+            IBIstruct.prev = ibi
+            IBIstruct.prevSet = true
+        }
+    }
+    
+    func didReceiveBatteryLevel(_ level: Float, withTimestamp timestamp: Double, fromDevice: EmpaticaDeviceManager!) {
+        DispatchQueue.main.async {
+            self.batteryLevel = level
+        }
+    }
+
+    func didReceiveTag(_ timestamp: Double, fromDevice: EmpaticaDeviceManager!) {
+        print("TAG")
+        TAGstruct.content.append(String(timestamp)+"\n")
+    }
+    
     func didUpdate( _ status: DeviceStatus, forDevice device: EmpaticaDeviceManager!) {
         switch status {
         case kDeviceStatusDisconnected:
             print("[didUpdate] Disconnected \(device.serialNumber!).")
-            self.notify()
+            self.notify(title: "E4 Disconnected", body: "Rediscover and reconnect to continue streaming.")
             self.saveSession()
             self.restartDiscovery()
             break
@@ -357,22 +435,40 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         self.deviceStatus = deviceStatusDisplay(status: device.deviceStatus)
     }
     
+    func didUpdate(_ onWristStatus: SensorStatus, forDevice device: EmpaticaDeviceManager!) {
+        switch onWristStatus {
+        case kE2SensorStatusNotOnWrist: 
+            print("[didUpdate] Sensor not on Wrist.")
+            self.notify(title: "E4 Not on Wrist", body: "Adjust sensor more tightly on wrist.")
+            break
+        case kE2SensorStatusOnWrist:
+            print("[didUpdate] Sensor on Wrist.")
+            break
+        case kE2SensorStatusDead:
+            print("[didUpdate] Sensor is Dead.")
+            self.notify(title: "E4 Out of Battery", body: "Charge the device to continue use.")
+            break
+        default:
+            break
+        }
+    }
+    
     func saveSession() {
         let date = Date()
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd-MM-yyyy!HH:mm:ss"
         let dayInWeek = dateFormatter.string(from: date)
         let filename = "Session::" + dayInWeek
-
+        self.EDAstruct.writeToUrl()
+        self.BVPstruct.writeToUrl()
+        self.TEMPstruct.writeToUrl()
         self.ACCstruct.writeToUrl()
-        /*BVPstruct.writeToUrl()
-        EDAstruct.writeToUrl()
-        TEMPstruct.writeToUrl()
-        IBIstruct.writeToUrl()
-        HRstruct.writeToUrl()*/
-
+        self.IBIstruct.writeToUrl()
+        self.TAGstruct.writeToUrl()
+        self.FEATUREstruct.writeToUrl()
+        
         do {
-            let path = try Zip.quickZipFiles([self.ACCstruct.path], fileName: filename)
+            let path = try Zip.quickZipFiles([EDAstruct.path, BVPstruct.path, TEMPstruct.path, ACCstruct.path, IBIstruct.path, TAGstruct.path, FEATUREstruct.path], fileName: filename)
             // file:///var/mobile/Containers/Data/Application/D4BD4F66-E243-44A7-AF99-8C6ACDDDAF99/Documents/Session::13-07-2024!01:56:59.zip
             print(path.absoluteString)
         } catch {
@@ -382,33 +478,68 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     }
     
     func resetFiles() {
+        self.EDAstruct = CSVlog(filename: "EDA.csv")
+        self.BVPstruct = CSVlog(filename: "BVP.csv")
+        self.TEMPstruct = CSVlog(filename: "TEMP.csv")
         self.ACCstruct = CSVlog(filename: "ACC.csv")
+        self.IBIstruct = CSVlog(filename: "IBI.csv")
+        self.TAGstruct = CSVlog(filename: "TAG.csv")
+        self.FEATUREstruct = CSVlog(filename: "FEATURE.csv")
     }
+
+    func load() async throws {
+        print("LOADED")
+        let task = Task<[Float], Error> {
+            let fileURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("gsrlist.data")
+            guard let data = try? Data(contentsOf: fileURL) else {
+                return []
+            }
+            let gsrList = try JSONDecoder().decode([Float].self, from: data)
+            return gsrList
+        }
+        let list = try await task.value
+        
+        DispatchQueue.main.async {
+            self.GSRList = list
+            self.current_index = self.GSRList.count
+            print("COUNT: ", self.GSRList.count)
+        }
+    }
+
+    func save(gsrList: [Float]) async throws {
+        let task = Task {
+            let data = try JSONEncoder().encode(gsrList)
+            let outfile = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("gsrlist.data")
+            try data.write(to: outfile)
+        }
+        _ = try await task.value
+    }
+    
 }
+
+import Foundation
 
 struct CSVlog {
     let filename: String
+    var content: String
+    var headerSet: Bool
+    var prevSet: Bool
+    var prev: Float
     var path: URL
-    var headerSet: Bool = false
-    var content: String = ""
 
     init(filename: String) {
         self.filename = filename
+        self.content = ""
+        self.headerSet = false
+        self.prevSet = false
+        self.prev = 0.0
         self.path = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(filename)
-    }
-
-    mutating func appendData(x: Int8, y: Int8, z: Int8, withTimestamp timestamp: Double) {
-        if !headerSet {
-            content.append("\(timestamp)\n32.000000, 32.000000, 32.000000\n")
-            headerSet = true
-        }
-        content.append("\(x),\(y),\(z)\n")
     }
 
     func writeToUrl() {
         do {
             // file:///private/var/mobile/Containers/Data/Application/D4BD4F66-E243-44A7-AF99-8C6ACDDDAF99/tmp/ACC.csv
-            try content.write(to: path, atomically: true, encoding: .utf8)
+            try content.write(to: path, atomically: true, encoding: String.Encoding.utf8)
         } catch {
             print("Failed to create file for export ...")
             print("\(error)")
