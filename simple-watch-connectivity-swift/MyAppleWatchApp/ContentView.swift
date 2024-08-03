@@ -14,8 +14,9 @@ struct ContentView: View {
     @ObservedObject var e4linkManager = E4linkManager.shared
     @ObservedObject var dataManager = DataManager.shared
     @State var showDisconnectAlert = false
-    //@State var showDisconnectedAlert = false
     @State var showDeleteAlert = false
+    @State var thresholdInput: String = ""
+    @FocusState var isFocused: Bool
     
     @EnvironmentObject var workoutManager: WorkoutManager
     @State private var triggerAuthorization = false
@@ -67,20 +68,7 @@ struct ContentView: View {
                                     .font(.caption)
                                     .foregroundColor(.white)
                             }
-                            
                         }
-                        /*.onChange(of: e4linkManager.deviceStatus) { oldState, newState in
-                            if newState == "Disconnected" {
-                                showDisconnectedAlert = true
-                            }
-                        }
-                        .alert(isPresented: $showDisconnectedAlert) {
-                            Alert(
-                                title: Text("Device Disconnected"),
-                                message: Text("\(device.name ?? "") has been disconnected. Rediscovering..."),
-                                dismissButton: .default(Text("OK"))
-                            )
-                        }*/
                         Spacer()
                         Button(action: {
                             if e4linkManager.deviceStatus == "Disconnected" {
@@ -126,18 +114,32 @@ struct ContentView: View {
             if (e4linkManager.deviceStatus == "Connected") {
                 VStack(alignment: .leading) {
                     Text("EDA Value: \(e4linkManager.absGSR)")
-                        .font(.caption).monospaced()
                     Text("Threshold: \(e4linkManager.threshold)")
-                        .font(.caption).monospaced()
                     Text("List Length: \(e4linkManager.GSRList.count)")
-                        .font(.caption).monospaced()
                     Text("Time: \(e4linkManager.current_index / e4linkManager.oneMinuteBufferSize) minute(s)")
-                        .font(.caption).monospaced()
                     Text("Feature Flag: \(e4linkManager.featureDetected)")
-                        
+                    HStack {
+                        TextField("Enter new threshold", text: $thresholdInput)
+                            .focused($isFocused)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .keyboardType(.decimalPad)
+                            .padding(.horizontal, 20)
+                        Button(action: {
+                            e4linkManager.threshold = Float(thresholdInput)!
+                            isFocused = false
+                        }) {
+                            Text("Set")
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 10)
+                                .foregroundColor(.white)
+                                .background(Color(red: 0.133, green: 0.439, blue: 0.710))
+                                .cornerRadius(15)
+                                .font(Font.system(.footnote, design: .rounded))
+                        }
+                    }
                 }
                 .font(.caption).monospaced()
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.gray)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 5)
                 .padding(.horizontal, 20)
@@ -249,20 +251,7 @@ struct ContentView: View {
                         print("\(error) for authorization")
                     }
                 })
-                
-                /*Button(action: {
-                    watchConnectivityManager.sendDataFromPhonePt2()
-                }) {
-                    Text("Send Data Pt. 2")
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 10)
-                        .foregroundColor(.white)
-                        .background(Color(red: 0.13333333333, green: 0.43921568627, blue: 0.70980392156))
-                        .cornerRadius(15)
-                        .font(Font.system(.footnote, design: .rounded))
-                }*/
             }.padding(.vertical, 40)
-            
         }
         .onAppear {
             e4linkManager.authenticate()

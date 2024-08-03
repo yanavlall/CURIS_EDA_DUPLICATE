@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		35B853342AE1DDCA00875CCF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B853332AE1DDCA00875CCF /* AppDelegate.swift */; };
-		35B853362AE1DDCA00875CCF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B853352AE1DDCA00875CCF /* SceneDelegate.swift */; };
 		35B8533D2AE1DDCD00875CCF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35B8533C2AE1DDCD00875CCF /* Assets.xcassets */; };
 		35B8534E2AE1E22000875CCF /* MyAppleWatchCompanionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionApp.swift */; };
 		35B853502AE1E22000875CCF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B8534F2AE1E22000875CCF /* ContentView.swift */; };
@@ -26,6 +25,7 @@
 		B677A9792C54657200117CF2 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = B677A9782C54657200117CF2 /* Zip */; };
 		B67ADD882C41BE070062906E /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67ADD872C41BE070062906E /* DataManager.swift */; };
 		B6CB44D42C3CAD0D00176951 /* E4link.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CB44D32C3CAD0D00176951 /* E4link.framework */; };
+		B6D1F89A2C599B8C00E8D2CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D1F8992C599B8C00E8D2CC /* SceneDelegate.swift */; };
 		B6E3E6112C374289000DCE69 /* E4linkHeader.h in Sources */ = {isa = PBXBuildFile; fileRef = B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */; };
 		B6E3E6172C374903000DCE69 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6E3E6152C3748EF000DCE69 /* CoreBluetooth.framework */; };
 		B6E3E6202C375B48000DCE69 /* E4linkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E3E61F2C375B48000DCE69 /* E4linkManager.swift */; };
@@ -58,7 +58,6 @@
 /* Begin PBXFileReference section */
 		35B853302AE1DDCA00875CCF /* MyAppleWatchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyAppleWatchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		35B853332AE1DDCA00875CCF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		35B853352AE1DDCA00875CCF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		35B8533C2AE1DDCD00875CCF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		35B8534B2AE1E22000875CCF /* MyAppleWatchCompanionApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyAppleWatchCompanionApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		35B8534D2AE1E22000875CCF /* MyAppleWatchCompanionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAppleWatchCompanionApp.swift; sourceTree = "<group>"; };
@@ -76,6 +75,7 @@
 		B677A96D2C5460D300117CF2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B67ADD872C41BE070062906E /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		B6CB44D32C3CAD0D00176951 /* E4link.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = E4link.framework; sourceTree = "<group>"; };
+		B6D1F8992C599B8C00E8D2CC /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = E4linkHeader.h; sourceTree = "<group>"; };
 		B6E3E6152C3748EF000DCE69 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		B6E3E61F2C375B48000DCE69 /* E4linkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = E4linkManager.swift; sourceTree = "<group>"; };
@@ -128,7 +128,7 @@
 				B677A9612C545D0B00117CF2 /* MyAppleWatchApp.entitlements */,
 				B677A9622C545D0B00117CF2 /* MyAppleWatchApp.swift */,
 				35B853332AE1DDCA00875CCF /* AppDelegate.swift */,
-				35B853352AE1DDCA00875CCF /* SceneDelegate.swift */,
+				B6D1F8992C599B8C00E8D2CC /* SceneDelegate.swift */,
 				B6182D242C2F56E900D6DB74 /* ContentView.swift */,
 				B6E3E61F2C375B48000DCE69 /* E4linkManager.swift */,
 				B67ADD872C41BE070062906E /* DataManager.swift */,
@@ -282,8 +282,8 @@
 				B6182D252C2F56E900D6DB74 /* ContentView.swift in Sources */,
 				B6E3E6202C375B48000DCE69 /* E4linkManager.swift in Sources */,
 				B67ADD882C41BE070062906E /* DataManager.swift in Sources */,
+				B6D1F89A2C599B8C00E8D2CC /* SceneDelegate.swift in Sources */,
 				B677A9652C545D0B00117CF2 /* WorkoutSession.swift in Sources */,
-				35B853362AE1DDCA00875CCF /* SceneDelegate.swift in Sources */,
 				B677A9682C545FF500117CF2 /* WorkoutManager.swift in Sources */,
 				B6182D272C2F572200D6DB74 /* WatchConnectivityManager.swift in Sources */,
 				B6E3E6112C374289000DCE69 /* E4linkHeader.h in Sources */,
@@ -372,6 +372,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -429,6 +430,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = NO;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				VALIDATE_PRODUCT = YES;
@@ -538,7 +540,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.MyCURIS19137AppleWatchApp.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
-				SKIP_INSTALL = NO;
+				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
@@ -573,7 +575,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.MyCURIS19137AppleWatchApp.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
-				SKIP_INSTALL = NO;
+				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;

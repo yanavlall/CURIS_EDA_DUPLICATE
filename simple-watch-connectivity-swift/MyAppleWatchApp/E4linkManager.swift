@@ -21,15 +21,14 @@ class E4linkManager: NSObject, ObservableObject {
     var TAGstruct = CSVlog(filename: "TAG.csv")
     var FEATUREstruct = CSVlog(filename: "FEATURE.csv")
     
-    @Published var batteryLevel: Float = 0.0
+    var batteryLevel: Float = 0.0
     
-    @Published var absGSR: Float = 0.0
-    @Published var threshold: Float = 3.0
-    @Published var GSRList: [Float] = []
-    @Published var current_index = 0
-    @Published var featureDetected: Bool = false
-    @Published var shouldPersistData: Bool = true
-    
+    var absGSR: Float = 0.0
+    var threshold: Float = 3.0
+    var GSRList: [Float] = []
+    var current_index = 0
+    var featureDetected: Bool = false
+    var shouldPersistData: Bool = true
     var baseline: Float = 0.0
     var flag: Bool = false
     var maintainFlag: Bool = false
@@ -172,6 +171,7 @@ extension E4linkManager: EmpaticaDelegate {
 extension E4linkManager: EmpaticaDeviceDelegate {
     @MainActor
     func didReceiveGSR(_ gsr: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
+        objectWillChange.send()
         let workoutManager = WorkoutManager.shared
         
         if (!EDAstruct.headerSet) {
@@ -181,11 +181,11 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         }
         EDAstruct.content.append(String(absGSR)+"\n")
 
-        DispatchQueue.main.async {
+        //DispatchQueue.main.async {
             self.absGSR = abs(gsr)
             self.GSRList.append(self.absGSR)
             self.current_index += 1
-        }
+        //}
         if shouldPersistData {
             Task {
                 do {
@@ -206,17 +206,17 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                 // Clean the signal before calculations
                 let cleanedSignal = smooth(signal: GSRList, windowSize: 20)
                 
-                DispatchQueue.main.async {
+                //DispatchQueue.main.async {
                     self.threshold = self.calculateThreshold(from: cleanedSignal)
-                }
+                //}
                 
                 lastFeatureCheckIndex = current_index
                 print("Initial data collection completed. Baseline: \(baseline), Threshold: \(threshold), Time: \(current_index / oneMinuteBufferSize)")
                 
                 // Stop persisting data after reaching collectionDuration
-                DispatchQueue.main.async {
+                //DispatchQueue.main.async {
                   self.shouldPersistData = false
-                }
+                //}
             }
         // Real-time Feature detection starts
         }
@@ -226,9 +226,9 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                 lastFeatureCheckIndex = current_index
                 print("One Minute Passed, Feature Flag is down \(current_index), Time: \(current_index / oneMinuteBufferSize)")
                 if didDetectFeature(signal: GSRList, currentIndex: current_index) {
-                    DispatchQueue.main.async {
+                    //DispatchQueue.main.async {
                         self.featureDetected = true
-                    }
+                    //}
                     feature_start = current_index
                     print("Feature detection started at index \(current_index), Time: \(current_index / oneMinuteBufferSize)")
                     print("Flag up")
@@ -251,9 +251,9 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             if (current_index - feature_start) % oneMinuteBufferSize == 0 {
                 print("One Minute Passed, Feature Flag is up at index:\(current_index), Time: \(current_index / oneMinuteBufferSize)")
                 if !postFeatureCheck(signal: GSRList, currentIndex: current_index) {
-                    DispatchQueue.main.async {
+                    //DispatchQueue.main.async {
                         self.featureDetected = false
-                    }
+                    //}
                     feature_end = current_index
                     print("Feature detection ended at index \(current_index), Time: \(current_index / oneMinuteBufferSize)")
                     FEATUREstruct.content.append(String(feature_start)+","+String(feature_end)+"\n")
@@ -286,8 +286,8 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         let filteredData = data.filter { $0 > perc25 && $0 < perc75 }
         let baseline = filteredData.reduce(0, +) / Float(filteredData.count)
         
-        print("Calculated Threshold: \(1.2 * baseline)")
-        return 1.2 * baseline
+        print("Calculated Threshold: \(1.5 * baseline)")
+        return 1.5 * baseline
     }
 
 
@@ -404,9 +404,9 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     }
     
     func didReceiveBatteryLevel(_ level: Float, withTimestamp timestamp: Double, fromDevice: EmpaticaDeviceManager!) {
-        DispatchQueue.main.async {
+        //DispatchQueue.main.async {
             self.batteryLevel = level
-        }
+        //}
     }
 
     func didReceiveTag(_ timestamp: Double, fromDevice: EmpaticaDeviceManager!) {
@@ -505,11 +505,11 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         }
         let list = try await task.value
         
-        DispatchQueue.main.async {
+        //DispatchQueue.main.async {
             self.GSRList = list
             self.current_index = self.GSRList.count
             print("COUNT: ", self.GSRList.count)
-        }
+        //}
     }
 
     func save(gsrList: [Float]) async throws {
@@ -522,8 +522,6 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     }
     
 }
-
-import Foundation
 
 struct CSVlog {
     let filename: String

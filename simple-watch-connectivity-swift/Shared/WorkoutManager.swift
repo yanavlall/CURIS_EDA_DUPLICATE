@@ -10,11 +10,6 @@ import HealthKit
 
 @MainActor
 class WorkoutManager: NSObject, ObservableObject {
-    struct SessionStateChange {
-        let newState: HKWorkoutSessionState
-        let date: Date
-    }
-    
     @Published var sessionState: HKWorkoutSessionState = .notStarted
     @Published var workout: HKWorkout?
     /**
@@ -24,46 +19,10 @@ class WorkoutManager: NSObject, ObservableObject {
     let typesToRead: Set = [HKQuantityType.workoutType()]
     let healthStore = HKHealthStore()
     var session: HKWorkoutSession?
-
-    /**
-     Creates an async stream that buffers a single newest element, and the stream's continuation to yield new elements synchronously to the stream.
-     The Swift actors don't handle tasks in a first-in-first-out way. Use AsyncStream to make sure that the app presents the latest state.
-     */
-    let asynStreamTuple = AsyncStream.makeStream(of: SessionStateChange.self, bufferingPolicy: .bufferingNewest(1))
     /**
      WorkoutManager is a singleton.
      */
     static let shared = WorkoutManager()
-    
-    /**
-     Kick off a task to consume the async stream. The next value in the stream can't start processing
-     until "await consumeSessionStateChange(value)" returns and the loop enters the next iteration, which serializes the asynchronous operations.
-     */
-    private override init() {
-        super.init()
-        Task {
-            for await value in asynStreamTuple.stream {
-                await consumeSessionStateChange(value)
-            }
-        }
-    }
-    /**
-     Consume the session state change from the async stream to update sessionState and finish the workout.
-     */
-    private func consumeSessionStateChange(_ change: SessionStateChange) async {
-        sessionState = change.newState
-        /**
-          Wait for the session to transition states before ending the builder.
-         */
-        #if os(watchOS)
-
-        guard change.newState == .stopped else {
-            return
-        }
-        print("END SESSION")
-        session?.end()
-        #endif
-    }
 }
 
 // MARK: - Workout session management
@@ -73,6 +32,11 @@ extension WorkoutManager {
         print("RESET")
         session = nil
         sessionState = .notStarted
+        
+        #if os(watchOS)
+        print("END SESSION")
+        session?.end()
+        #endif
     }
 }
 
@@ -87,12 +51,6 @@ extension WorkoutManager: HKWorkoutSessionDelegate {
                                     from fromState: HKWorkoutSessionState,
                                     date: Date) {
         print("Session state changed from \(fromState.rawValue) to \(toState.rawValue)")
-        /**
-         Yield the new state change to the async stream synchronously.
-         asynStreamTuple is a constant, so it's nonisolated.
-         */
-        let sessionStateChange = SessionStateChange(newState: toState, date: date)
-        asynStreamTuple.continuation.yield(sessionStateChange)
     }
         
     nonisolated func workoutSession(_ workoutSession: HKWorkoutSession,
