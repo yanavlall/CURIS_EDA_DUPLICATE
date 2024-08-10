@@ -4,17 +4,32 @@
 //
 
 import SwiftUI
-import HealthKit
+import WatchConnectivity
+import Combine
 
 struct ContentView: View {
-    @EnvironmentObject var workoutManager: WorkoutManager
+    @ObservedObject var workoutManager = WorkoutManager.shared
+    @ObservedObject var watchSession = WatchSession.shared
+    
+    @State var dataValue = ""
     
     var body: some View {
-        Text("Notification!")
-            .fontWeight(.semibold)
-            .onAppear {
+        VStack {
+            Text(dataValue)
+                .fontWeight(.semibold)
+                .padding()
+            
+            Text("Notification!")
+                .fontWeight(.semibold)
+        }
+        .onAppear {
             workoutManager.requestAuthorization()
+        }
+        .onReceive(
+            Just(watchSession.receivedData).delay(for: 1, scheduler: RunLoop.main)
+        )
+        { newValue in
+            self.dataValue = watchSession.receivedData
         }
     }
 }
-

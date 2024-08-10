@@ -3,7 +3,6 @@
 //  MyAppleWatchApp
 //
 
-import Foundation
 import WatchConnectivity
 
 class WatchConnectivityManager: NSObject, ObservableObject, WCSessionDelegate {
@@ -46,19 +45,19 @@ class WatchConnectivityManager: NSObject, ObservableObject, WCSessionDelegate {
     // Delegate Watch Session.
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
-            print("WCSession activation failed with error: \(error.localizedDescription)")
+            print("WCSession activation failed with error: \(error.localizedDescription).")
         } else {
-            print("WCSession activated with state: \(activationState.rawValue)")
+            print("WCSession activated with state: \(activationState.rawValue).")
         }
     }
     
     func sessionDidBecomeInactive(_ session: WCSession) {
-        print("WCSession did become inactive")
+        print("WCSession did become inactive.")
         wcSession?.activate()
     }
     
     func sessionDidDeactivate(_ session: WCSession) {
-        print("WCSession did deactivate")
+        print("WCSession did deactivate.")
         wcSession?.activate()
     }
 }

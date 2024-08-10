@@ -14,16 +14,17 @@
 		35B853522AE1E22200875CCF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35B853512AE1E22200875CCF /* Assets.xcassets */; };
 		35B853582AE1E22200875CCF /* MyAppleWatchCompanionApp.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 35B8534B2AE1E22000875CCF /* MyAppleWatchCompanionApp.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		35C100272AE22CDE0044FBF0 /* WatchSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35C100262AE22CDE0044FBF0 /* WatchSession.swift */; };
+		B60443F72C674C4800BC0C3F /* WorkoutSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60443F62C674C4800BC0C3F /* WorkoutSession.swift */; };
 		B6182D252C2F56E900D6DB74 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6182D242C2F56E900D6DB74 /* ContentView.swift */; };
 		B6182D272C2F572200D6DB74 /* WatchConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */; };
-		B677A9602C545AD700117CF2 /* WorkoutSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677A95F2C545AD700117CF2 /* WorkoutSession.swift */; };
 		B677A9642C545D0B00117CF2 /* MyAppleWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677A9622C545D0B00117CF2 /* MyAppleWatchApp.swift */; };
-		B677A9652C545D0B00117CF2 /* WorkoutSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677A9632C545D0B00117CF2 /* WorkoutSession.swift */; };
 		B677A9682C545FF500117CF2 /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677A9662C545FF500117CF2 /* WorkoutManager.swift */; };
 		B677A9692C545FF500117CF2 /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677A9662C545FF500117CF2 /* WorkoutManager.swift */; };
 		B677A96E2C5460D300117CF2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B677A96D2C5460D300117CF2 /* AppDelegate.swift */; };
 		B677A9792C54657200117CF2 /* Zip in Frameworks */ = {isa = PBXBuildFile; productRef = B677A9782C54657200117CF2 /* Zip */; };
 		B67ADD882C41BE070062906E /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67ADD872C41BE070062906E /* DataManager.swift */; };
+		B69AAA2D2C6128F900D299ED /* DevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69AAA2C2C6128F900D299ED /* DevicesView.swift */; };
+		B69AAA2F2C61290300D299ED /* FilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69AAA2E2C61290300D299ED /* FilesView.swift */; };
 		B6CB44D42C3CAD0D00176951 /* E4link.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CB44D32C3CAD0D00176951 /* E4link.framework */; };
 		B6D1F89A2C599B8C00E8D2CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D1F8992C599B8C00E8D2CC /* SceneDelegate.swift */; };
 		B6E3E6112C374289000DCE69 /* E4linkHeader.h in Sources */ = {isa = PBXBuildFile; fileRef = B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */; };
@@ -64,16 +65,17 @@
 		35B8534F2AE1E22000875CCF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		35B853512AE1E22200875CCF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		35C100262AE22CDE0044FBF0 /* WatchSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSession.swift; sourceTree = "<group>"; };
+		B60443F62C674C4800BC0C3F /* WorkoutSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutSession.swift; sourceTree = "<group>"; };
 		B6182D242C2F56E900D6DB74 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityManager.swift; sourceTree = "<group>"; };
 		B677A95E2C545AD700117CF2 /* MyAppleWatchCompanionApp.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = MyAppleWatchCompanionApp.entitlements; sourceTree = "<group>"; };
-		B677A95F2C545AD700117CF2 /* WorkoutSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutSession.swift; sourceTree = "<group>"; };
 		B677A9612C545D0B00117CF2 /* MyAppleWatchApp.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = MyAppleWatchApp.entitlements; sourceTree = "<group>"; };
 		B677A9622C545D0B00117CF2 /* MyAppleWatchApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyAppleWatchApp.swift; sourceTree = "<group>"; };
-		B677A9632C545D0B00117CF2 /* WorkoutSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutSession.swift; sourceTree = "<group>"; };
 		B677A9662C545FF500117CF2 /* WorkoutManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
 		B677A96D2C5460D300117CF2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B67ADD872C41BE070062906E /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		B69AAA2C2C6128F900D299ED /* DevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesView.swift; sourceTree = "<group>"; };
+		B69AAA2E2C61290300D299ED /* FilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesView.swift; sourceTree = "<group>"; };
 		B6CB44D32C3CAD0D00176951 /* E4link.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = E4link.framework; sourceTree = "<group>"; };
 		B6D1F8992C599B8C00E8D2CC /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = E4linkHeader.h; sourceTree = "<group>"; };
@@ -130,10 +132,11 @@
 				35B853332AE1DDCA00875CCF /* AppDelegate.swift */,
 				B6D1F8992C599B8C00E8D2CC /* SceneDelegate.swift */,
 				B6182D242C2F56E900D6DB74 /* ContentView.swift */,
+				B69AAA2C2C6128F900D299ED /* DevicesView.swift */,
+				B69AAA2E2C61290300D299ED /* FilesView.swift */,
 				B6E3E61F2C375B48000DCE69 /* E4linkManager.swift */,
 				B67ADD872C41BE070062906E /* DataManager.swift */,
 				B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */,
-				B677A9632C545D0B00117CF2 /* WorkoutSession.swift */,
 				B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */,
 				35B8533C2AE1DDCD00875CCF /* Assets.xcassets */,
 			);
@@ -148,7 +151,7 @@
 				B677A96D2C5460D300117CF2 /* AppDelegate.swift */,
 				35B8534F2AE1E22000875CCF /* ContentView.swift */,
 				35C100262AE22CDE0044FBF0 /* WatchSession.swift */,
-				B677A95F2C545AD700117CF2 /* WorkoutSession.swift */,
+				B60443F62C674C4800BC0C3F /* WorkoutSession.swift */,
 				35B853512AE1E22200875CCF /* Assets.xcassets */,
 			);
 			path = MyAppleWatchCompanionApp;
@@ -277,13 +280,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B69AAA2D2C6128F900D299ED /* DevicesView.swift in Sources */,
 				B677A9642C545D0B00117CF2 /* MyAppleWatchApp.swift in Sources */,
 				35B853342AE1DDCA00875CCF /* AppDelegate.swift in Sources */,
 				B6182D252C2F56E900D6DB74 /* ContentView.swift in Sources */,
 				B6E3E6202C375B48000DCE69 /* E4linkManager.swift in Sources */,
 				B67ADD882C41BE070062906E /* DataManager.swift in Sources */,
 				B6D1F89A2C599B8C00E8D2CC /* SceneDelegate.swift in Sources */,
-				B677A9652C545D0B00117CF2 /* WorkoutSession.swift in Sources */,
+				B69AAA2F2C61290300D299ED /* FilesView.swift in Sources */,
 				B677A9682C545FF500117CF2 /* WorkoutManager.swift in Sources */,
 				B6182D272C2F572200D6DB74 /* WatchConnectivityManager.swift in Sources */,
 				B6E3E6112C374289000DCE69 /* E4linkHeader.h in Sources */,
@@ -296,9 +300,9 @@
 			files = (
 				B677A96E2C5460D300117CF2 /* AppDelegate.swift in Sources */,
 				35B853502AE1E22000875CCF /* ContentView.swift in Sources */,
+				B60443F72C674C4800BC0C3F /* WorkoutSession.swift in Sources */,
 				35B8534E2AE1E22000875CCF /* MyAppleWatchCompanionApp.swift in Sources */,
 				B677A9692C545FF500117CF2 /* WorkoutManager.swift in Sources */,
-				B677A9602C545AD700117CF2 /* WorkoutSession.swift in Sources */,
 				35C100272AE22CDE0044FBF0 /* WatchSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -454,13 +458,14 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/MyAppleWatchApp";
 				INFOPLIST_FILE = MyAppleWatchApp/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Connection to E4 Wristband";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Share Health Data";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Update Health Data";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path",
@@ -492,13 +497,14 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/MyAppleWatchApp";
 				INFOPLIST_FILE = MyAppleWatchApp/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Connection to E4 Wristband";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Share Health Data";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Update Health Data";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path",

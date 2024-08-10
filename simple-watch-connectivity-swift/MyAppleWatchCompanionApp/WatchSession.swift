@@ -3,15 +3,16 @@
 //  MyAppleWatchCompanionApp
 //
 
-import Foundation
 import WatchConnectivity
 import WatchKit
 
 class WatchSession: NSObject, ObservableObject {
+    static let shared = WatchSession()
+
     var wcSession: WCSession?
     
     // Initialize published variable to get data.
-    @Published var receivedData: String = "Haven't received any data"
+    @Published var receivedData: String = "Haven't received any data."
     
     // Init.
     override init() {
@@ -28,10 +29,10 @@ class WatchSession: NSObject, ObservableObject {
 extension WatchSession: WCSessionDelegate {
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
-            print("WCSession activation failed with error: \(error.localizedDescription)")
+            print("WCSession activation failed with error: \(error.localizedDescription).")
             return
         }
-        print("WCSession activated with state: \(activationState.rawValue)")
+        print("WCSession activated with state: \(activationState.rawValue).")
     }
     
     // Receive data via Message.

@@ -3,13 +3,14 @@
 //  MyAppleWatchApp
 //
 
-import Foundation
 import Zip
-import HealthKit
+import SwiftUI
 
 class E4linkManager: NSObject, ObservableObject {
     static let shared = E4linkManager()
     
+    @ObservedObject var watchConnectivityManager = WatchConnectivityManager.shared
+    @ObservedObject var dataManager = DataManager.shared
     @Published var devices: [EmpaticaDeviceManager] = []
     @Published var deviceStatus = "Disconnected"
     
@@ -21,7 +22,8 @@ class E4linkManager: NSObject, ObservableObject {
     var TAGstruct = CSVlog(filename: "TAG.csv")
     var FEATUREstruct = CSVlog(filename: "FEATURE.csv")
     
-    var batteryLevel: Float = 0.0
+    var batteryLevel: Int = 0
+    var didCollectData: Bool = false
     
     var absGSR: Float = 0.0
     var threshold: Float = 3.0
@@ -34,9 +36,9 @@ class E4linkManager: NSObject, ObservableObject {
     var maintainFlag: Bool = false
     var isCollectingInitialData: Bool = true
     var featureIndices: [(Int, Int)] = []
-    let oneMinuteBufferSize = 1 * 60 * 4
+    var oneMinuteBufferSize = 1 * 60 * 4
     var samplingRate: Int = 4
-    let collectionDuration = 6 * 60 * 60 * 4 // Testing - 5 minutes, Actual - 6 hours
+    var collectionDuration = 6 * 60 * 60 * 4 // Testing - 5 minutes, Actual - 6 hours
     var feature_start = 0
     var feature_end = 0
     var lastFeatureCheckIndex = 0
@@ -171,22 +173,21 @@ extension E4linkManager: EmpaticaDelegate {
 extension E4linkManager: EmpaticaDeviceDelegate {
     @MainActor
     func didReceiveGSR(_ gsr: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
-        objectWillChange.send()
-        let workoutManager = WorkoutManager.shared
-        
-        if (!EDAstruct.headerSet) {
-            EDAstruct.content.append(String(timestamp)+"\n")
-            EDAstruct.content.append("4.000000"+"\n")
-            EDAstruct.headerSet = true
+        print("EDA value : \(self.absGSR), Current Index: \(self.current_index)")
+                
+        if (!self.EDAstruct.headerSet) {
+            self.EDAstruct.content.append(String(timestamp)+"\n")
+            self.EDAstruct.content.append("4.000000"+"\n")
+            self.EDAstruct.headerSet = true
         }
-        EDAstruct.content.append(String(absGSR)+"\n")
+        self.EDAstruct.content.append(String(self.absGSR)+"\n")
+        self.didCollectData = true
 
-        //DispatchQueue.main.async {
-            self.absGSR = abs(gsr)
-            self.GSRList.append(self.absGSR)
-            self.current_index += 1
-        //}
-        if shouldPersistData {
+        self.absGSR = abs(gsr)
+        self.GSRList.append(absGSR)
+        self.current_index += 1
+        
+        if self.shouldPersistData {
             Task {
                 do {
                     try await self.save(gsrList: self.GSRList)
@@ -195,84 +196,56 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                 }
             }
         }
-        print("EDA value : \(absGSR), Current Index: \(current_index)")
         
-        // 6 hour Data Collection
-        if isCollectingInitialData {
-            if GSRList.count >= collectionDuration {
+        // 6 hour data collection
+        if self.isCollectingInitialData {
+            if self.GSRList.count >= self.collectionDuration {
                 
-                isCollectingInitialData = false
+                self.isCollectingInitialData = false
                 
                 // Clean the signal before calculations
-                let cleanedSignal = smooth(signal: GSRList, windowSize: 20)
+                let cleanedSignal = self.smooth(signal: self.GSRList, windowSize: 20)
                 
-                //DispatchQueue.main.async {
-                    self.threshold = self.calculateThreshold(from: cleanedSignal)
-                //}
+                self.threshold = self.calculateThreshold(from: cleanedSignal)
                 
-                lastFeatureCheckIndex = current_index
-                print("Initial data collection completed. Baseline: \(baseline), Threshold: \(threshold), Time: \(current_index / oneMinuteBufferSize)")
+                self.lastFeatureCheckIndex = self.current_index
+                print("Initial data collection completed. Baseline: \(self.baseline), Threshold: \(self.threshold), Time: \(self.current_index / self.oneMinuteBufferSize)")
                 
                 // Stop persisting data after reaching collectionDuration
-                //DispatchQueue.main.async {
-                  self.shouldPersistData = false
-                //}
+                self.shouldPersistData = false
             }
-        // Real-time Feature detection starts
+        // Real-time feature detection starts
         }
             
-        if !featureDetected {
-            if (current_index - lastFeatureCheckIndex) % oneMinuteBufferSize == 0 {
-                lastFeatureCheckIndex = current_index
-                print("One Minute Passed, Feature Flag is down \(current_index), Time: \(current_index / oneMinuteBufferSize)")
-                if didDetectFeature(signal: GSRList, currentIndex: current_index) {
-                    //DispatchQueue.main.async {
-                        self.featureDetected = true
-                    //}
-                    feature_start = current_index
-                    print("Feature detection started at index \(current_index), Time: \(current_index / oneMinuteBufferSize)")
+        if !self.featureDetected {
+            if (self.current_index - self.lastFeatureCheckIndex) % self.oneMinuteBufferSize == 0 {
+                self.lastFeatureCheckIndex = self.current_index
+                print("One Minute Passed, Feature Flag is down \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
+                if self.didDetectFeature(signal: self.GSRList, currentIndex: self.current_index) {
+                    self.featureDetected = true
+                    self.feature_start = self.current_index
+                    print("Feature detection started at index \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
                     print("Flag up")
                     
-                    Task {
-                        do {
-                            try await workoutManager.startWatchWorkout(workoutType: .cycling)
-                        } catch {
-                            print("Failed to start cycling on the paired watch.")
-                        }
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-                        print("DISPATCHED")
-                        workoutManager.resetWorkout()
-                    }
+                    self.watchConnectivityManager.sendDataFromPhone()
                 }
             }
         
         } else {
-            if (current_index - feature_start) % oneMinuteBufferSize == 0 {
-                print("One Minute Passed, Feature Flag is up at index:\(current_index), Time: \(current_index / oneMinuteBufferSize)")
-                if !postFeatureCheck(signal: GSRList, currentIndex: current_index) {
-                    //DispatchQueue.main.async {
-                        self.featureDetected = false
-                    //}
-                    feature_end = current_index
-                    print("Feature detection ended at index \(current_index), Time: \(current_index / oneMinuteBufferSize)")
-                    FEATUREstruct.content.append(String(feature_start)+","+String(feature_end)+"\n")
-                    featureIndices.append((feature_start, feature_end))
+            if (self.current_index - self.feature_start) % self.oneMinuteBufferSize == 0 {
+                print("One Minute Passed, Feature Flag is up at index:\(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
+                if !self.postFeatureCheck(signal: self.GSRList, currentIndex: self.current_index) {
+                    self.featureDetected = false
+                    self.feature_end = self.current_index
+                    print("Feature detection ended at index \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
+                    self.FEATUREstruct.content.append(String(self.feature_start)+","+String(self.feature_end)+"\n")
+                    self.featureIndices.append((self.feature_start, self.feature_end))
                     
-                    Task {
-                        do {
-                            try await workoutManager.startWatchWorkout(workoutType: .cycling)
-                        } catch {
-                            print("Failed to start cycling on the paired watch.")
-                        }
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-                        print("DISPATCHED")
-                        workoutManager.resetWorkout()
-                    }
+                    self.watchConnectivityManager.sendDataFromPhonePt2()
                 }
             }
         }
+        objectWillChange.send()
     }
     
     func calculateThreshold(from data: [Float]) -> Float {
@@ -291,7 +264,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     }
 
 
-    // Implement Moving Average to Smooth the Signal
+    // Implement moving average to smooth the signal
     func smooth(signal: [Float], windowSize: Int) -> [Float] {
         guard windowSize > 1 else { return signal }
         var smoothedSignal: [Float] = []
@@ -305,21 +278,21 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         return smoothedSignal
     }
     
-    // Go back  15 minutes in time, check if mean is over threshold throughout that period,
+    // Go back 15 minutes in time, check if mean is over threshold throughout that period
     func didDetectFeature(signal: [Float], currentIndex: Int) -> Bool {
-        let chunkSize = 5 * 60 * samplingRate
-        let lookBackPeriod = 15 * 60 * samplingRate // 15 minutes in data points - Actual
+        let chunkSize = 5 * 60 * self.samplingRate
+        let lookBackPeriod = 15 * 60 * self.samplingRate // 15 minutes in data points - Actual
         
         // let chunkSize = 30 * samplingRate
         // let lookBackPeriod = 3 * 60 * samplingRate
         
-        guard currentIndex >= lookBackPeriod else {
+        guard (currentIndex >= lookBackPeriod) else {
             print("DidDetectFeature - Not enough data for feature detection at index \(currentIndex)")
             return false
         }
         
         // Clean the signal before calculations
-        let cleanedSignal = smooth(signal: signal, windowSize: 20)
+        let cleanedSignal = self.smooth(signal: signal, windowSize: 20)
         
         for i in 0..<3 { // CHANGE TO 3 WHEN DONE WITH TESTING
             let chunkStart = currentIndex - lookBackPeriod + (i * chunkSize)
@@ -327,9 +300,10 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             let chunk = Array(cleanedSignal[chunkStart..<chunkEnd])
             let meanChunk = chunk.reduce(0, +) / Float(chunk.count)
             
-            print("Chunk \(i): mean = \(meanChunk), threshold = \(threshold), chunkStart = \(chunkStart), chunkEnd = \(chunkEnd)")
+            print("Chunk \(i): mean = \(meanChunk), threshold = \(self.threshold), chunkStart = \(chunkStart), chunkEnd = \(chunkEnd)")
 
-            if meanChunk <= threshold {
+            if (meanChunk <= self.threshold) {
+                print(meanChunk)
                 return false
             }
         }
@@ -339,79 +313,77 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     
     // Every one minute after the feature is detected, you check if the last 10 minutes had mean > threshold, keep doing this until not true
     func postFeatureCheck(signal: [Float], currentIndex: Int) -> Bool {
-        let lookBackPeriod = 10 * 60 * samplingRate // 10 minutes in data points - Actual
+        let lookBackPeriod = 10 * 60 * self.samplingRate // 10 minutes in data points - Actual
     //  let lookBackPeriod = 2 * 60 * samplingRate
         
-        guard currentIndex >= lookBackPeriod else {
+        guard (currentIndex >= lookBackPeriod) else {
             print("postFeatureCheck - Not enough data for feature detection at index \(currentIndex)")
             return false
         }
     
         // Clean the signal before calculations
-        let cleanedSignal = smooth(signal: signal, windowSize: 20)
+        let cleanedSignal = self.smooth(signal: signal, windowSize: 20)
         
         let lookBackStart = currentIndex - lookBackPeriod
         let lookBackEnd = currentIndex
         let lookBackChunk = Array(cleanedSignal[lookBackStart..<lookBackEnd])
         let meanChunk = lookBackChunk.reduce(0, +) / Float(lookBackChunk.count)
         
-    if meanChunk > threshold {
-        print("PostFeatureChecking Continuing")
+        if (meanChunk > self.threshold) {
+            print("PostFeatureChecking Continuing")
     }
-        return meanChunk > threshold
+        return meanChunk > self.threshold
     }
     
     func didReceiveBVP(_ bvp: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
-        if (!BVPstruct.headerSet) {
-            BVPstruct.content.append(String(timestamp)+"\n")
-            BVPstruct.content.append("64.000000"+"\n")
-            BVPstruct.headerSet = true
+        if (!self.BVPstruct.headerSet) {
+            self.BVPstruct.content.append(String(timestamp)+"\n")
+            self.BVPstruct.content.append("64.000000"+"\n")
+            self.BVPstruct.headerSet = true
         }
-        BVPstruct.content.append(String(bvp)+"\n")
+        self.BVPstruct.content.append(String(bvp)+"\n")
     }
     
     func didReceiveTemperature(_ temp: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
-        if (!TEMPstruct.headerSet) {
-            TEMPstruct.content.append(String(timestamp)+"\n")
-            TEMPstruct.content.append("4.000000"+"\n")
-            TEMPstruct.headerSet = true
+        if (!self.TEMPstruct.headerSet) {
+            self.TEMPstruct.content.append(String(timestamp)+"\n")
+            self.TEMPstruct.content.append("4.000000"+"\n")
+            self.TEMPstruct.headerSet = true
         }
-        TEMPstruct.content.append(String(temp)+"\n")
+        self.TEMPstruct.content.append(String(temp)+"\n")
     }
     
     func didReceiveAccelerationX(_ x: Int8, y: Int8, z: Int8, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
-        if (!ACCstruct.headerSet) {
-            ACCstruct.content.append(String(timestamp)+"\n")
-            ACCstruct.content.append("32.000000, 32.000000, 32.000000"+"\n")
-            ACCstruct.headerSet = true
+        if (!self.ACCstruct.headerSet) {
+            self.ACCstruct.content.append(String(timestamp)+"\n")
+            self.ACCstruct.content.append("32.000000, 32.000000, 32.000000"+"\n")
+            self.ACCstruct.headerSet = true
         }
-        ACCstruct.content.append(String(x)+","+String(y)+","+String(z)+"\n")
+        self.ACCstruct.content.append(String(x)+","+String(y)+","+String(z)+"\n")
     }
     
     func didReceiveIBI(_ ibi: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
-        if (!IBIstruct.headerSet) {
-            IBIstruct.content.append(String(timestamp)+", IBI\n")
-            IBIstruct.headerSet = true
+        if (!self.IBIstruct.headerSet) {
+            self.IBIstruct.content.append(String(timestamp)+", IBI\n")
+            self.IBIstruct.headerSet = true
         }
-        if (IBIstruct.prevSet) {
-            let diff = ibi - IBIstruct.prev
-            IBIstruct.content.append(String(ibi)+","+String(diff))
-            IBIstruct.prev = ibi
+        if (self.IBIstruct.prevSet) {
+            let diff = ibi - self.IBIstruct.prev
+            self.IBIstruct.content.append(String(ibi)+","+String(diff))
+            self.IBIstruct.prev = ibi
         } else {
-            IBIstruct.prev = ibi
-            IBIstruct.prevSet = true
+            self.IBIstruct.prev = ibi
+            self.IBIstruct.prevSet = true
         }
-    }
-    
-    func didReceiveBatteryLevel(_ level: Float, withTimestamp timestamp: Double, fromDevice: EmpaticaDeviceManager!) {
-        //DispatchQueue.main.async {
-            self.batteryLevel = level
-        //}
     }
 
-    func didReceiveTag(_ timestamp: Double, fromDevice: EmpaticaDeviceManager!) {
-        print("TAG")
-        TAGstruct.content.append(String(timestamp)+"\n")
+    @MainActor
+    func didReceiveBatteryLevel(_ level: Float, withTimestamp timestamp: Double, fromDevice: EmpaticaDeviceManager!) {
+        self.batteryLevel = Int(level * 100)
+    }
+    
+    func didReceiveTag(atTimestamp timestamp: Double, fromDevice: EmpaticaDeviceManager!) {
+        self.TAGstruct.content.append(String(timestamp)+"\n")
     }
     
     func didUpdate( _ status: DeviceStatus, forDevice device: EmpaticaDeviceManager!) {
@@ -420,6 +392,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             print("[didUpdate] Disconnected \(device.serialNumber!).")
             self.notify(title: "E4 Disconnected", body: "Rediscover and reconnect to continue streaming.")
             self.saveSession()
+            self.dataManager.reloadFiles()
             self.restartDiscovery()
             break
         case kDeviceStatusConnecting:
@@ -441,18 +414,18 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         self.deviceStatus = deviceStatusDisplay(status: device.deviceStatus)
     }
     
-    func didUpdate(_ onWristStatus: SensorStatus, forDevice device: EmpaticaDeviceManager!) {
+    @MainActor
+    func didUpdate(onWristStatus: SensorStatus, forDevice device: EmpaticaDeviceManager!) {
         switch onWristStatus {
-        case kE2SensorStatusNotOnWrist: 
-            print("[didUpdate] Sensor not on Wrist.")
+        case kE2SensorStatusNotOnWrist:
             self.notify(title: "E4 Not on Wrist", body: "Adjust sensor more tightly on wrist.")
             break
         case kE2SensorStatusOnWrist:
-            print("[didUpdate] Sensor on Wrist.")
+            self.notify(title: "E4 Looks Great", body: "Sensor is attached well. Thank you!")
             break
         case kE2SensorStatusDead:
-            print("[didUpdate] Sensor is Dead.")
-            self.notify(title: "E4 Out of Battery", body: "Charge the device to continue use.")
+            self.notify(title: "E4 Out of Battery", body: "Session saved. Charge sensor to continue use.")
+            self.saveSession()
             break
         default:
             break
@@ -474,7 +447,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         self.FEATUREstruct.writeToUrl()
         
         do {
-            let path = try Zip.quickZipFiles([EDAstruct.path, BVPstruct.path, TEMPstruct.path, ACCstruct.path, IBIstruct.path, TAGstruct.path, FEATUREstruct.path], fileName: filename)
+            let path = try Zip.quickZipFiles([self.EDAstruct.path, self.BVPstruct.path, self.TEMPstruct.path, self.ACCstruct.path, self.IBIstruct.path, self.TAGstruct.path, self.FEATUREstruct.path], fileName: filename)
             // file:///var/mobile/Containers/Data/Application/D4BD4F66-E243-44A7-AF99-8C6ACDDDAF99/Documents/Session::13-07-2024!01:56:59.zip
             print(path.absoluteString)
         } catch {
@@ -491,6 +464,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         self.IBIstruct = CSVlog(filename: "IBI.csv")
         self.TAGstruct = CSVlog(filename: "TAG.csv")
         self.FEATUREstruct = CSVlog(filename: "FEATURE.csv")
+        self.didCollectData = false
     }
 
     func load() async throws {
@@ -505,11 +479,9 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         }
         let list = try await task.value
         
-        //DispatchQueue.main.async {
-            self.GSRList = list
-            self.current_index = self.GSRList.count
-            print("COUNT: ", self.GSRList.count)
-        //}
+        self.GSRList = list
+        self.current_index = self.GSRList.count
+        print("COUNT: ", self.GSRList.count)
     }
 
     func save(gsrList: [Float]) async throws {
@@ -520,7 +492,6 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         }
         _ = try await task.value
     }
-    
 }
 
 struct CSVlog {
@@ -543,7 +514,7 @@ struct CSVlog {
     func writeToUrl() {
         do {
             // file:///private/var/mobile/Containers/Data/Application/D4BD4F66-E243-44A7-AF99-8C6ACDDDAF99/tmp/ACC.csv
-            try content.write(to: path, atomically: true, encoding: String.Encoding.utf8)
+            try content.write(to: self.path, atomically: true, encoding: String.Encoding.utf8)
         } catch {
             print("Failed to create file for export ...")
             print("\(error)")

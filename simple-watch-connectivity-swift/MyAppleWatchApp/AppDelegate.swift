@@ -8,11 +8,12 @@ import UserNotifications
 import HealthKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    var backgroundTask: UIBackgroundTaskIdentifier = .invalid
+    @ObservedObject var e4linkManager = E4linkManager.shared
+    @ObservedObject var workoutManager = WorkoutManager.shared
+    @Published var backgroundTask: UIBackgroundTaskIdentifier = .invalid
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Request notification authorization
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge, .criticalAlert]) { granted, error in
             if let error = error {
                 print("Request authorization failed: \(error.localizedDescription).")
             } else if granted {
@@ -22,33 +23,54 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
         
-        // Set the delegate to self
         UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        UNUserNotificationCenter.current().setBadgeCount(0)
         
         EmpaticaAPI.initialize()
+        
+        Task {
+            do {
+                let configuration = HKWorkoutConfiguration()
+                configuration.activityType = .other
+                configuration.locationType = .unknown
+                try await workoutManager.healthStore.startWatchApp(toHandle: configuration)
+            } catch {
+                print("Failed to start workout on the paired watch.")
+            }
+        }
+        
         return true
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        // Handle the notification when the app is in the foreground
+        // Handle the notification when the app is in the foreground.
         completionHandler([.banner, .sound, .badge])
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        // Handle the user's response to the notification
+        // Handle the user's response to the notification.
         completionHandler()
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        startBackgroundTask()
+        self.startBackgroundTask()
         EmpaticaAPI.prepareForBackground()
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive.
-        endBackgroundTask()
+        self.endBackgroundTask()
         EmpaticaAPI.prepareForResume()
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        if (e4linkManager.didCollectData) {
+            e4linkManager.saveSession()
+        }
+        e4linkManager.notify(title: "E4 Terminated", body: "Please reopen app and restart discovery.")
+        NotificationCenter.default.post(name: UIApplication.willTerminateNotification, object: nil)
     }
     
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
@@ -62,19 +84,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
         EmpaticaAPI.cancelDiscovery()
+        self.workoutManager.resetWorkout()
     }
     
     func startBackgroundTask() {
-        backgroundTask = UIApplication.shared.beginBackgroundTask {
+        self.backgroundTask = UIApplication.shared.beginBackgroundTask {
             self.endBackgroundTask()
         }
-        assert(backgroundTask != .invalid)
+        assert(self.backgroundTask != .invalid)
     }
 
     func endBackgroundTask() {
-        if backgroundTask != .invalid {
-            UIApplication.shared.endBackgroundTask(backgroundTask)
-            backgroundTask = .invalid
+        if self.backgroundTask != .invalid {
+            UIApplication.shared.endBackgroundTask(self.backgroundTask)
+            self.backgroundTask = .invalid
         }
     }
 }

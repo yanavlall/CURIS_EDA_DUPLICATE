@@ -2,10 +2,7 @@
 //  WorkoutManager.swift
 //  MyAppleWatchApp
 //
-//  A class that wraps the data and operations related to workout.
 
-import Foundation
-import os
 import HealthKit
 
 @MainActor
@@ -28,15 +25,20 @@ class WorkoutManager: NSObject, ObservableObject {
 // MARK: - Workout session management
 //
 extension WorkoutManager {
+    func requestAuthorization() {
+        Task {
+            do {
+                try await healthStore.requestAuthorization(toShare: typesToShare, read: typesToRead)
+            } catch {
+                print("Failed to request authorization: \(error).")
+            }
+        }
+    }
+    
     func resetWorkout() {
-        print("RESET")
-        session = nil
-        sessionState = .notStarted
-        
-        #if os(watchOS)
-        print("END SESSION")
-        session?.end()
-        #endif
+        self.session?.end()
+        self.session = nil
+        self.sessionState = .notStarted
     }
 }
 
