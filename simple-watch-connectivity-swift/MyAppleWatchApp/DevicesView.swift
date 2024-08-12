@@ -11,6 +11,7 @@ struct DevicesView: View {
     @State var thresholdInput: String = ""
     @State var showThresholdAlert = false
     @FocusState var isFocused: Bool
+    @State var showSurvey = false
         
     var body: some View {
         ScrollView {
@@ -18,9 +19,13 @@ struct DevicesView: View {
                 headerView
                 deviceListSection
                 deviceDetailsSection
+                surveyButton
             }
             .padding(.horizontal, 20)
             .padding(.top, 20)
+            .sheet(isPresented: $showSurvey) {
+                SurveyView(survey: SampleSurvey)
+            }
         }
         .background(Color.white.edgesIgnoringSafeArea(.all))
         .onAppear {
@@ -156,6 +161,22 @@ struct DevicesView: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(10)
+            }
+        }
+    }
+    
+    // MARK: - Survey Button
+    private var surveyButton: some View {
+        HStack(spacing: 20) {
+            Button(action: {
+                showSurvey.toggle()
+            }) {
+                Text("Show Survey")
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .cornerRadius(15)
             }
         }
     }

@@ -25,6 +25,10 @@
 		B67ADD882C41BE070062906E /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67ADD872C41BE070062906E /* DataManager.swift */; };
 		B69AAA2D2C6128F900D299ED /* DevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69AAA2C2C6128F900D299ED /* DevicesView.swift */; };
 		B69AAA2F2C61290300D299ED /* FilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69AAA2E2C61290300D299ED /* FilesView.swift */; };
+		B69E48B42C69258000D97D65 /* SurveyModelClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69E48B12C69258000D97D65 /* SurveyModelClass.swift */; };
+		B69E48B52C69258000D97D65 /* SurveyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69E48B22C69258000D97D65 /* SurveyView.swift */; };
+		B69E48B62C69258000D97D65 /* SurveyHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69E48B32C69258000D97D65 /* SurveyHelper.swift */; };
+		B69E48B92C69367800D97D65 /* SampleSurvey.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69E48B72C69367800D97D65 /* SampleSurvey.swift */; };
 		B6CB44D42C3CAD0D00176951 /* E4link.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CB44D32C3CAD0D00176951 /* E4link.framework */; };
 		B6D1F89A2C599B8C00E8D2CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D1F8992C599B8C00E8D2CC /* SceneDelegate.swift */; };
 		B6E3E6112C374289000DCE69 /* E4linkHeader.h in Sources */ = {isa = PBXBuildFile; fileRef = B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */; };
@@ -76,6 +80,10 @@
 		B67ADD872C41BE070062906E /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		B69AAA2C2C6128F900D299ED /* DevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesView.swift; sourceTree = "<group>"; };
 		B69AAA2E2C61290300D299ED /* FilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesView.swift; sourceTree = "<group>"; };
+		B69E48B12C69258000D97D65 /* SurveyModelClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SurveyModelClass.swift; sourceTree = "<group>"; };
+		B69E48B22C69258000D97D65 /* SurveyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SurveyView.swift; sourceTree = "<group>"; };
+		B69E48B32C69258000D97D65 /* SurveyHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SurveyHelper.swift; sourceTree = "<group>"; };
+		B69E48B72C69367800D97D65 /* SampleSurvey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleSurvey.swift; sourceTree = "<group>"; };
 		B6CB44D32C3CAD0D00176951 /* E4link.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = E4link.framework; sourceTree = "<group>"; };
 		B6D1F8992C599B8C00E8D2CC /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		B6E3E60A2C3739AB000DCE69 /* E4linkHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = E4linkHeader.h; sourceTree = "<group>"; };
@@ -134,6 +142,10 @@
 				B6182D242C2F56E900D6DB74 /* ContentView.swift */,
 				B69AAA2C2C6128F900D299ED /* DevicesView.swift */,
 				B69AAA2E2C61290300D299ED /* FilesView.swift */,
+				B69E48B22C69258000D97D65 /* SurveyView.swift */,
+				B69E48B12C69258000D97D65 /* SurveyModelClass.swift */,
+				B69E48B72C69367800D97D65 /* SampleSurvey.swift */,
+				B69E48B32C69258000D97D65 /* SurveyHelper.swift */,
 				B6E3E61F2C375B48000DCE69 /* E4linkManager.swift */,
 				B67ADD872C41BE070062906E /* DataManager.swift */,
 				B6182D262C2F572200D6DB74 /* WatchConnectivityManager.swift */,
@@ -286,9 +298,13 @@
 				B6182D252C2F56E900D6DB74 /* ContentView.swift in Sources */,
 				B6E3E6202C375B48000DCE69 /* E4linkManager.swift in Sources */,
 				B67ADD882C41BE070062906E /* DataManager.swift in Sources */,
+				B69E48B52C69258000D97D65 /* SurveyView.swift in Sources */,
+				B69E48B42C69258000D97D65 /* SurveyModelClass.swift in Sources */,
 				B6D1F89A2C599B8C00E8D2CC /* SceneDelegate.swift in Sources */,
+				B69E48B92C69367800D97D65 /* SampleSurvey.swift in Sources */,
 				B69AAA2F2C61290300D299ED /* FilesView.swift in Sources */,
 				B677A9682C545FF500117CF2 /* WorkoutManager.swift in Sources */,
+				B69E48B62C69258000D97D65 /* SurveyHelper.swift in Sources */,
 				B6182D272C2F572200D6DB74 /* WatchConnectivityManager.swift in Sources */,
 				B6E3E6112C374289000DCE69 /* E4linkHeader.h in Sources */,
 			);
