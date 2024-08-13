@@ -8,10 +8,12 @@ import Foundation
 class DataManager: ObservableObject {
     static let shared = DataManager()
     
-    @Published var files: [URL] = []
+    @Published var sessionFiles: [URL] = []
+    @Published var surveyFiles: [URL] = []
     
     func reloadFiles() {
-        self.files = []
+        self.sessionFiles = []
+        self.surveyFiles = []
         let fileManager = FileManager.default
         
         // file:///var/mobile/Containers/Data/Application/D4BD4F66-E243-44A7-AF99-8C6ACDDDAF99/Documents/ //
@@ -22,22 +24,30 @@ class DataManager: ObservableObject {
             
             for file in fileURLs {
                 let filename = file.lastPathComponent
-                if (filename.hasPrefix("Session")) && (filename.hasSuffix(".zip")) && (!files.contains(file)) {
-                    self.files.append(file)
+                if (filename.hasPrefix("Session")) && (filename.hasSuffix(".zip")) && (!sessionFiles.contains(file)) {
+                    self.sessionFiles.append(file)
+                } else if (filename.hasPrefix("Survey")) && (filename.hasSuffix(".json")) && (!surveyFiles.contains(file)) {
+                    self.surveyFiles.append(file)
                 }
             }
+            
         } catch {
             print("Error while enumerating files \(documentsURL.path): \(error.localizedDescription)")
         }
     }
 
-    func deleteFile(at index: Int) {
-        let file = files[index]
+    func deleteFile(at index: Int, type: String) {
+        var file: URL
+        if type == "session" {
+            file = sessionFiles[index]
+        } else {
+            print("Removed file...")
+            file = surveyFiles[index]
+        }
         do {
             try FileManager.default.removeItem(at: file)
-            print("Removed file...")
         } catch {
-            print("Error deleting file...")
+            print("Error deleting file: \(error)")
         }
         self.reloadFiles()
     }

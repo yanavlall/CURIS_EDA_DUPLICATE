@@ -6,36 +6,31 @@
 import SwiftUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIGestureRecognizerDelegate {
+    @ObservedObject var e4linkManager = E4linkManager.shared
     
     // file:///var/mobile/Containers/Data/Application/D4BD4F66-E243-44A7-AF99-8C6ACDDDAF99/Documents/ //
     let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
 
-    /*var window: UIWindow?
+    var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         
-        
-        var survey : Survey = SampleSurvey
-        
-        let jsonUrl = self.documentsURL.appendingPathComponent("sample_survey.json")
-        try? Survey.SaveToFile(survey: survey, url: jsonUrl)
+        /*let jsonUrl = self.documentsURL.appendingPathComponent("sample_survey.json")
+        try? Survey.save(survey, to: jsonUrl)
         print( " Saved survey to: \n" , jsonUrl.path )
  
-        if let loadedSurvey = try? Survey.LoadFromFile(url: jsonUrl) {
+        if let loadedSurvey = try? Survey.load(from: jsonUrl) {
             print(" Loaded survey from:\n ", jsonUrl)
             survey = loadedSurvey
-        }
-        
-        // Create the SwiftUI view that provides the window contents.
-        let contentView = SurveyView(survey: survey, delegate: self).preferredColorScheme(.light)
+        }*/
 
         // Use a UIHostingController as window root view controller.
-        if let windowScene = scene as? UIWindowScene {
+        /*if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = UIHostingController(rootView: contentView)
+            window.rootViewController = UIHostingController(rootView: ContentView())
             self.window = window
             
             // Add a tap gesture to the background to dismiss the keyboard
@@ -46,8 +41,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIGestureRecognizerDele
             window.addGestureRecognizer(tapGesture)
             
             window.makeKeyAndVisible()
-        }
-    }*/
+        }*/
+    }
     
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return false // set to `false` if you don't want to detect tap during other gestures
@@ -89,13 +84,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIGestureRecognizerDele
 
 extension SceneDelegate : SurveyViewDelegate {
     func surveyCompleted(with survey: Survey) {
-        let jsonUrl = self.documentsURL.appendingPathComponent("survey_filled_" + String(Int.random(in: 0...100)) + ".json")
+        print("COMPLETED")
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd-MM-yyyy!HH:mm:ss"
+        let dayInWeek = dateFormatter.string(from: date)
+        let filename = "Survey::" + dayInWeek
+        
+        let jsonUrl = self.documentsURL.appendingPathComponent(filename + ".json")
     
-        try? Survey.SaveToFile(survey: survey, url: jsonUrl)
-        print( " Saved survey to: \n" , jsonUrl.path )
+        try? Survey.save(survey, to: jsonUrl)
+        print( "Saved survey to: \n" , jsonUrl.path )
+        e4linkManager.showSurvey = false
+        e4linkManager.showSurveyButton = false
     }
     
-    func surveyDeclined() { }
+    func surveyDeclined() { 
+        e4linkManager.showSurvey = false
+    }
     
     func surveyRemindMeLater() { }
     

@@ -11,8 +11,8 @@ struct DevicesView: View {
     @State var thresholdInput: String = ""
     @State var showThresholdAlert = false
     @FocusState var isFocused: Bool
-    @State var showSurvey = false
-        
+    @State var isFirstAppear = false
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -23,19 +23,22 @@ struct DevicesView: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 20)
-            .sheet(isPresented: $showSurvey) {
-                SurveyView(survey: SampleSurvey)
+            .sheet(isPresented: $e4linkManager.showSurvey) {
+                SurveyView(survey: SampleSurvey, delegate: SceneDelegate()).preferredColorScheme(.light)
             }
         }
         .background(Color.white.edgesIgnoringSafeArea(.all))
         .onAppear {
-            e4linkManager.authenticate()
-            Task {
-                do {
-                    try await e4linkManager.load()
-                } catch {
-                    fatalError(error.localizedDescription)
+            if (!isFirstAppear) {
+                e4linkManager.authenticate()
+                Task {
+                    do {
+                        try await e4linkManager.load()
+                    } catch {
+                        fatalError(error.localizedDescription)
+                    }
                 }
+                isFirstAppear = true
             }
         }
     }
@@ -120,7 +123,8 @@ struct DevicesView: View {
             if e4linkManager.deviceStatus == "Connected" {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("EDA Value: \(e4linkManager.absGSR)")
-                    Text("Threshold: \(e4linkManager.threshold)")
+                    Text("Default Threshold: 3.0")
+                    Text("Unique Threshold: \(e4linkManager.threshold)")
                     Text("List Length: \(e4linkManager.GSRList.count)")
                     Text("Time: \(e4linkManager.current_index / e4linkManager.oneMinuteBufferSize) minute(s)")
                     Text("Feature Flag: \(e4linkManager.featureDetected)")
@@ -168,15 +172,17 @@ struct DevicesView: View {
     // MARK: - Survey Button
     private var surveyButton: some View {
         HStack(spacing: 20) {
-            Button(action: {
-                showSurvey.toggle()
-            }) {
-                Text("Show Survey")
-                    .foregroundColor(.white)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .cornerRadius(15)
+            if e4linkManager.showSurveyButton {
+                Button(action: {
+                    e4linkManager.showSurvey = true
+                }) {
+                    Text("Show Survey")
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .cornerRadius(15)
+                }
             }
         }
     }

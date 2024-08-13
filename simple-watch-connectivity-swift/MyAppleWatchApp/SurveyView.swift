@@ -195,8 +195,6 @@ struct CustomButtonStyle: ButtonStyle {
             .foregroundColor(Color.white)
             .opacity(configuration.isPressed ? 0.7 : 1)
             .scaleEffect(configuration.isPressed ? 0.8 : 1)
-            .animation(.easeInOut(duration: 0.2))
-            
     }
 }
 
@@ -410,7 +408,7 @@ struct CommentsFormQuestionView : View {
             Text(question.subtitle).font(.title3).italic().foregroundColor(Color(.secondaryLabel))
                 .padding(EdgeInsets(top: 0, leading: 28, bottom: 1, trailing: 28))
             
-            VStack(alignment: .leading) {
+            /*VStack(alignment: .leading) {
                 Text("Email Address")
                     .font(.callout)
                     .bold()
@@ -424,7 +422,7 @@ struct CommentsFormQuestionView : View {
 //                    .textContentType(.emailAddress)
                     
                     
-            }.padding()
+            }.padding()*/
             
             VStack(alignment: .leading) {
 
@@ -767,13 +765,11 @@ struct MultipleChoiceQuestionView : View {
     
     
     var body: some View {
-        VStack {
+        VStack {    
                     
         Text(question.title).font(.title).fontWeight(.bold).padding(EdgeInsets(top:14, leading: 16, bottom: 8, trailing: 16))
-            
-        if question.allowsMultipleSelection {
-            Text("Pick as many as you want").font(.title3).italic().foregroundColor(Color(.secondaryLabel))
-        }
+        
+            Text("(please answer in regards to the activity you were doing)").font(.title3).italic().foregroundColor(Color(.secondaryLabel)).padding(.bottom, 10).padding(.horizontal, 30)
             
         ForEach(question.choices, id: \.uuid) { choice in
             
@@ -881,17 +877,15 @@ struct SurveyView: View {
             
             // TODO: break out into IntroView
             VStack {
-                
                 HStack {
-                    Text("👋").font(.system(size: 80))
-                    Text("😀").font(.system(size: 100))
+                    //Image("start").imageScale(.small)
                 }.padding(EdgeInsets(top: 50, leading: 0, bottom: 20, trailing: 0))
                 
-                Text("Help us out?").font(.system(size: 45)).multilineTextAlignment(.center)
+                Text("Quick Check-in!").font(.system(size: 35, design: .rounded)).multilineTextAlignment(.center)
               
-                Text("We could use your feedback").font(.title).padding(30).multilineTextAlignment(.center)
-                
-                Text("Please take this short survey, it would mean a lot!").font(.title2).padding(EdgeInsets(top: 0, leading: 40, bottom: 10, trailing: 45)).multilineTextAlignment(.center)
+                Text("Please answer the following questions at your convenience.").font(.title).fontDesign(.rounded).padding(20).multilineTextAlignment(.center)
+                        
+                Spacer()
                 
                 HStack {
                     
@@ -917,12 +911,9 @@ struct SurveyView: View {
         //if true {
             
             VStack {
+                Spacer()
                 
-                Text("👍").font(.system(size: 120)).padding(EdgeInsets(top: 60, leading: 0, bottom: 20, trailing: 0))
-                
-                Text("Thanks!").font(.system(size: 45)).multilineTextAlignment(.center)
-              
-                Text("We really appreciate your feedback!").font(.title).padding(30).multilineTextAlignment(.center)
+                Text("Thanks!").font(.system(size: 35, design: .rounded)).multilineTextAlignment(.center)
                 
                 ProgressView()
                     .opacity( processing ? 1.0 : 0.0 )
@@ -933,15 +924,35 @@ struct SurveyView: View {
                 //.enabled( !self.processing )
                 
             
-                Button(action: { self.restartSurveyTapped() }, label: {
+                /*Button(action: { self.restartSurveyTapped() }, label: {
                     Text("Retake Survey")
-                }).padding()
+                }).padding()*/
+                
+                Spacer()
+                
+                HStack() {
+                                    
+                    Button(action: { previousTapped() }, label: {
+                        Text("Previous").foregroundColor(Color(.secondaryLabel)).bold()
+                    }).buttonStyle(CustomButtonStyle(bgColor: Color(.systemGray5)))
+                    
+                    Spacer()
+                                    
+                }.padding(EdgeInsets(top: 12, leading: 22, bottom: 0, trailing: 22))
+                    
+                .background(Color(.systemGray6))
+                .edgesIgnoringSafeArea( [.leading, .trailing] )
+                
+
+                
             }
             
         } else {
         
             VStack(spacing:0) {
-                                    
+            
+            Spacer()
+                
             Text("Question ".appendingFormat("%i / %i", currentQuestion+1, self.survey.questions.count))
                 .bold().padding(EdgeInsets(top: 5, leading: 0, bottom: 2, trailing: 0))
                 .frame(maxWidth: .infinity)
@@ -994,7 +1005,7 @@ struct SurveyView: View {
                         Text("Next").bold()
                     }).buttonStyle(CustomButtonStyle(bgColor: Color.blue))
                                     
-                }.padding(EdgeInsets(top: 12, leading: 22, bottom: 18, trailing: 22))
+                }.padding(EdgeInsets(top: 12, leading: 22, bottom: 33, trailing: 22))
                     
                 .background(Color(.systemGray6))
                 .edgesIgnoringSafeArea( [.leading, .trailing] )
@@ -1053,13 +1064,18 @@ struct SurveyView: View {
             }
         }
         
+        if surveyState == .complete {
+            self.currentQuestion = survey.questions.count - 1
+            self.surveyState = .taking
+        }
+        
     }
     
     func nextTapped() {
-        
         if self.currentQuestion == survey.questions.count-1 {
             // Survey done
             self.setSurveyComplete()
+            print("COMPLETE")
         } else {
             //self.currentQuestion += 1
             for i in (self.currentQuestion+1)..<self.survey.questions.count {
@@ -1091,7 +1107,6 @@ struct SurveyView: View {
         
         survey.metadata = meta
         
-        
         self.delegate?.surveyCompleted(with: self.survey)
         
         self.processing = false
@@ -1118,18 +1133,7 @@ struct SurveyView: View {
     }
     
     func setSurveyComplete() {
-        
         self.surveyState = .complete
-        
     }
-    
 }
 
-struct SurveyView_Previews: PreviewProvider {
-    
-    static var previews: some View {
-        
-        SurveyView(survey: SampleSurvey).preferredColorScheme(.light)
-        
-    }
-}

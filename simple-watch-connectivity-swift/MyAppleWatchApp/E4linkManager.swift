@@ -13,6 +13,8 @@ class E4linkManager: NSObject, ObservableObject {
     @ObservedObject var dataManager = DataManager.shared
     @Published var devices: [EmpaticaDeviceManager] = []
     @Published var deviceStatus = "Disconnected"
+    @Published var showSurveyButton = true
+    @Published var showSurvey = false
     
     var EDAstruct = CSVlog(filename: "EDA.csv")
     var BVPstruct = CSVlog(filename: "BVP.csv")
@@ -228,6 +230,11 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                     print("Flag up")
                     
                     self.watchConnectivityManager.sendDataFromPhone()
+                    self.notify(title: "Feature Detected", body: "EDA level above threshold.")
+                    self.showSurveyButton = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1800) {
+                        self.showSurveyButton = false
+                    }
                 }
             }
         
@@ -242,6 +249,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                     self.featureIndices.append((self.feature_start, self.feature_end))
                     
                     self.watchConnectivityManager.sendDataFromPhonePt2()
+                    self.notify(title: "Feature Ended", body: "EDA level below threshold.")
                 }
             }
         }

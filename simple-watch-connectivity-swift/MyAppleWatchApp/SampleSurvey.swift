@@ -1,88 +1,159 @@
 //
-//  3dScannerAppSurvey.swift
-//  SwiftSurvey
+//  SampleSurvey.swift
+//  MyAppleWatchApp
 //
-//  Created by CC Laan on 8/10/21.
-//
-
-import Foundation
-import SwiftUI
-import Combine
-
 
 typealias MCQ = MultipleChoiceQuestion
 typealias MCR = MultipleChoiceResponse
 
-
-
-func ImportanceQuestion( _ title : String ) -> MultipleChoiceQuestion {
-    return MultipleChoiceQuestion(title: title, answers: [ "Not Important" , "Somewhat Important", "Very Important" ], tag: TitleToTag(title))
+// MARK: - Helper Functions
+/// Creates a `MultipleChoiceQuestion` for determining the importance of a feature.
+func importanceQuestion(_ title: String) -> MultipleChoiceQuestion {
+    MultipleChoiceQuestion(title: title, answers: ["Not Important", "Somewhat Important", "Very Important"], tag: titleToTag(title))
 }
 
-let SampleSurvey = Survey([
-    
-    MCQ(title: "What are you primarily using our app for?",
-                                          items: [
-                                            "Work",
-                                            "Fun",
-                                            "Just trying it out",
-                                            MultipleChoiceResponse("Other", allowsCustomTextEntry: true)
-                                          ], multiSelect: true,
-                                          tag: "what-using-for"),
-    
-    
-    InlineMultipleChoiceQuestionGroup(title: "What new features are important to you?",
-                                      questions: [
-                                        
-                                        ImportanceQuestion("Faster load times"),
-                                        ImportanceQuestion("Dark mode support"),
-                                        ImportanceQuestion("Lasers"),
-                                      ],
-                                      tag: "importance-what-improvements"),
-    
-    ask_contact_us,
-    
-    contact_form.setVisibleWhenSelected(ask_contact_us.choices.first!),
-    
-    ask_comments,
-    
-    comments_form.setVisibleWhenSelected(ask_comments.choices.first!),
-    
-    
-],
-version: "001")
+// MARK: - Survey Questions
+let askContactUs = BinaryQuestion(
+    title: "Would you like to be contacted about new features?",
+    answers: ["Yes", "No"],
+    tag: "contact-us"
+)
 
+let contactForm = ContactFormQuestion(
+    title: "Please share your contact info and we will reach out",
+    tag: "contact-form"
+)
 
-let ask_contact_us =
-    BinaryQuestion(title: "Would you like to be contacted about new features?" , answers: ["Yes", "No"],
-                    tag: "contact-us")
+let askComments = BinaryQuestion(
+    title: "Do you have any feedback or feature ideas for us?",
+    answers: ["Yes", "No"],
+    autoAdvanceOnChoice: true,
+    tag: "do-you-have-feedback"
+)
 
-let contact_form = ContactFormQuestion(title: "Please share your contact info and we will reach out",
-                                       tag: "contact-form")
+let commentsForm = CommentsFormQuestion(
+    title: "Tell us your feedback or feature requests",
+    subtitle: "Optionally leave your email",
+    tag: "feedback-comments-form"
+)
 
+// MARK: - Sample Survey
+let SampleSurvey = Survey(
+    questions: [
 
-
-// Some
-let ask_comments =
-    BinaryQuestion(title: "Do you have any feedback or feature ideas for us?",
-                   answers: ["Yes", "No"],
-                   autoAdvanceOnChoice: true,
-                   tag: "do-you-have-feedback")
-
-let comments_form = CommentsFormQuestion(title: "Tell us your feedback or feature requests",
-                                         subtitle: "Optionally leave your email",
-                                         tag: "feedback-comments-form")
-
-
-
-
-
-
-struct SampleSurvey_Previews: PreviewProvider {
-    
-    static var previews: some View {
+        CommentsFormQuestion(
+            title: "Think back to 15 minutes ago. What activity were you doing?",
+            subtitle: "",
+            tag: "feedback-comments-form"
+        ),
         
-        SurveyView(survey: SampleSurvey).preferredColorScheme(.light)
+        MCQ(
+            title: "I feel focused.",
+            items: [
+                "Not at all",
+                "A little",
+                "Somewhat",
+                "Very Much So"
+                // MCR("Other", allowsCustomTextEntry: true)
+            ],
+            multiSelect: false,
+            tag: "q2"
+        ),
         
-    }
-}
+        MCQ(
+            title: "I feel stressed.",
+            items: [
+                "Not at all",
+                "A little",
+                "Somewhat",
+                "Very Much So"
+                // MCR("Other", allowsCustomTextEntry: true)
+            ],
+            multiSelect: false,
+            tag: "q3"
+        ),
+        
+        MCQ(
+            title: "I feel excited.",
+            items: [
+                "Not at all",
+                "A little",
+                "Somewhat",
+                "Very Much So"
+                // MCR("Other", allowsCustomTextEntry: true)
+            ],
+            multiSelect: false,
+            tag: "q4"
+        ),
+        
+        MCQ(
+            title: "I feel anxious.",
+            items: [
+                "Not at all",
+                "A little",
+                "Somewhat",
+                "Very Much So"
+                // MCR("Other", allowsCustomTextEntry: true)
+            ],
+            multiSelect: false,
+            tag: "q5"
+        ),
+        
+        MCQ(
+            title: "I feel pleasant.",
+            items: [
+                "Not at all",
+                "A little",
+                "Somewhat",
+                "Very Much So"
+                // MCR("Other", allowsCustomTextEntry: true)
+            ],
+            multiSelect: false,
+            tag: "q6"
+        ),
+        
+        MCQ(
+            title: "I feel relaxed.",
+            items: [
+                "Not at all",
+                "A little",
+                "Somewhat",
+                "Very Much So"
+                // MCR("Other", allowsCustomTextEntry: true)
+            ],
+            multiSelect: false,
+            tag: "q7"
+        ),
+        
+        MCQ(
+            title: "I feel happy.",
+            items: [
+                "Not at all",
+                "A little",
+                "Somewhat",
+                "Very Much So"
+                // MCR("Other", allowsCustomTextEntry: true)
+            ],
+            multiSelect: false,
+            tag: "q8"
+        )
+        
+        
+        /*InlineMultipleChoiceQuestionGroup(
+            title: "What new features are important to you?",
+            questions: [
+                importanceQuestion("Faster load times"),
+                importanceQuestion("Dark mode support"),
+                importanceQuestion("Lasers")
+            ],
+            tag: "importance-what-improvements"
+        ),
+        
+        askContactUs,
+        contactForm.setVisibleWhenSelected(askContactUs.choices.first!),
+        
+        askComments,
+        commentsForm.setVisibleWhenSelected(askComments.choices.first!)*/
+    ],
+    version: "001"
+)
