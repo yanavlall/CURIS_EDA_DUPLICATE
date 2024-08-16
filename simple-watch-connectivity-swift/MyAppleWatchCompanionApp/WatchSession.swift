@@ -46,7 +46,7 @@ extension WatchSession: WCSessionDelegate {
                 if type == "first" {
                     WKInterfaceDevice.current().play(.success)
                 } else {
-                    WKInterfaceDevice.current().play(.notification)
+                    WKInterfaceDevice.current().play(.failure)
                 }
             }
         }

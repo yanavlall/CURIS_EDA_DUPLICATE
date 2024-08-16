@@ -860,6 +860,7 @@ struct SurveyView: View {
     
     @State var surveyState : SurveyState = .showingIntroScreen
     @State var processing = false
+    @State private var showIncompleteAlert = false
     
     @ObservedObject private var keyboard = KeyboardResponder()
     
@@ -918,7 +919,12 @@ struct SurveyView: View {
                 ProgressView()
                     .opacity( processing ? 1.0 : 0.0 )
                 
-                Button(action: { submitSurveyTapped() }, label: {
+                Button(action: { 
+                    if survey.validateCompletion() {
+                        submitSurveyTapped()
+                    } else {
+                        showIncompleteAlert = true
+                } }, label: {
                     Text("Submit Survey").bold()
                 }).buttonStyle(CustomButtonStyle(bgColor: Color.blue)).padding()
                 //.enabled( !self.processing )
@@ -943,8 +949,13 @@ struct SurveyView: View {
                 .background(Color(.systemGray6))
                 .edgesIgnoringSafeArea( [.leading, .trailing] )
                 
-
-                
+            }
+            .alert(isPresented: $showIncompleteAlert) {
+                Alert(
+                    title: Text("Incomplete Survey"),
+                    message: Text("Please answer all required questions before submitting."),
+                    dismissButton: .default(Text("OK"))
+                )
             }
             
         } else {
@@ -1075,7 +1086,6 @@ struct SurveyView: View {
         if self.currentQuestion == survey.questions.count-1 {
             // Survey done
             self.setSurveyComplete()
-            print("COMPLETE")
         } else {
             //self.currentQuestion += 1
             for i in (self.currentQuestion+1)..<self.survey.questions.count {

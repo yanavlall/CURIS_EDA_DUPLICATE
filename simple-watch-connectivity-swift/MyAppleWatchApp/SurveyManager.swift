@@ -27,6 +27,29 @@ extension Survey {
         let jsonData = try encoder.encode(survey)
         try jsonData.write(to: url, options: [.atomic])
     }
+    
+    func toCSVRow() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yyyy,HH:mm:ss"
+        let timestamp = formatter.string(from: Date())
+        
+        var row = "\(timestamp),\(version)"
+        
+        for question in questions {
+            if let mcQuestion = question as? MultipleChoiceQuestion {
+                let selectedChoices = mcQuestion.choices.filter { $0.selected }.map { $0.text }.joined(separator: ";")
+                row += ",\(selectedChoices)"
+            } else if let binaryQuestion = question as? BinaryQuestion {
+                let selectedChoice = binaryQuestion.choices.first { $0.selected }?.text ?? ""
+                row += ",\(selectedChoice)"
+            } else if let contactForm = question as? ContactFormQuestion {
+                row += ",\(contactForm.emailAddress),\(contactForm.name),\(contactForm.company),\(contactForm.phoneNumber),\(contactForm.feedback)"
+            } else if let commentsForm = question as? CommentsFormQuestion {
+                row += ",\(commentsForm.feedback)"
+            }
+        }
+        return row
+    }
 }
 
 // MARK: - Utility Function

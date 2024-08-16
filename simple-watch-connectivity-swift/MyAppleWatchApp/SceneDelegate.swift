@@ -10,43 +10,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIGestureRecognizerDele
     
     // file:///var/mobile/Containers/Data/Application/D4BD4F66-E243-44A7-AF99-8C6ACDDDAF99/Documents/ //
     let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-
-    var window: UIWindow?
-
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        
-        /*let jsonUrl = self.documentsURL.appendingPathComponent("sample_survey.json")
-        try? Survey.save(survey, to: jsonUrl)
-        print( " Saved survey to: \n" , jsonUrl.path )
- 
-        if let loadedSurvey = try? Survey.load(from: jsonUrl) {
-            print(" Loaded survey from:\n ", jsonUrl)
-            survey = loadedSurvey
-        }*/
-
-        // Use a UIHostingController as window root view controller.
-        /*if let windowScene = scene as? UIWindowScene {
-            let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = UIHostingController(rootView: ContentView())
-            self.window = window
-            
-            // Add a tap gesture to the background to dismiss the keyboard
-            let tapGesture = UITapGestureRecognizer(target: window, action: #selector(UIView.endEditing))
-            tapGesture.requiresExclusiveTouchType = false
-            tapGesture.cancelsTouchesInView = false
-            tapGesture.delegate = self
-            window.addGestureRecognizer(tapGesture)
-            
-            window.makeKeyAndVisible()
-        }*/
-    }
-    
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return false // set to `false` if you don't want to detect tap during other gestures
-    }
     
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
@@ -84,17 +47,38 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIGestureRecognizerDele
 
 extension SceneDelegate : SurveyViewDelegate {
     func surveyCompleted(with survey: Survey) {
-        print("COMPLETED")
-        let date = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd-MM-yyyy!HH:mm:ss"
-        let dayInWeek = dateFormatter.string(from: date)
-        let filename = "Survey::" + dayInWeek
-        
-        let jsonUrl = self.documentsURL.appendingPathComponent(filename + ".json")
-    
-        try? Survey.save(survey, to: jsonUrl)
-        print( "Saved survey to: \n" , jsonUrl.path )
+        let filename = "SurveyResponses.csv"
+        let csvUrl = self.documentsURL.appendingPathComponent(filename)
+
+        // Prepare the CSV row
+        let csvRow = survey.toCSVRow() + "\n"
+
+        do {
+            if FileManager.default.fileExists(atPath: csvUrl.path) {
+                // Append to existing file
+                if let fileHandle = try? FileHandle(forWritingTo: csvUrl) {
+                    fileHandle.seekToEndOfFile()
+                    if let data = csvRow.data(using: .utf8) {
+                        fileHandle.write(data)
+                    }
+                    fileHandle.closeFile()
+                }
+            } else {
+                // File doesn't exist, create it with headers
+                let headers = "date,time,version," + survey.questions.map { $0.tag }.joined(separator: ",") + "\n"
+                let combinedData = headers + csvRow
+                try combinedData.write(to: csvUrl, atomically: true, encoding: .utf8)
+            }
+            print("Saved survey response to CSV: \(csvUrl.path)")
+        } catch {
+            print("Failed to save survey to CSV: \(error)")
+        }
+
+        // Reset the survey questions
+        for question in survey.questions {
+            question.reset()
+        }
+
         e4linkManager.showSurvey = false
         e4linkManager.showSurveyButton = false
     }

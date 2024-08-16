@@ -44,7 +44,7 @@ let SampleSurvey = Survey(
         CommentsFormQuestion(
             title: "Think back to 15 minutes ago. What activity were you doing?",
             subtitle: "",
-            tag: "feedback-comments-form"
+            tag: "q1: comments"
         ),
         
         MCQ(
@@ -57,7 +57,7 @@ let SampleSurvey = Survey(
                 // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
-            tag: "q2"
+            tag: "q2: focused"
         ),
         
         MCQ(
@@ -70,9 +70,8 @@ let SampleSurvey = Survey(
                 // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
-            tag: "q3"
+            tag: "q3: stressed"
         ),
-        
         MCQ(
             title: "I feel excited.",
             items: [
@@ -83,7 +82,7 @@ let SampleSurvey = Survey(
                 // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
-            tag: "q4"
+            tag: "q4: excited"
         ),
         
         MCQ(
@@ -96,7 +95,7 @@ let SampleSurvey = Survey(
                 // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
-            tag: "q5"
+            tag: "q5: anxious"
         ),
         
         MCQ(
@@ -109,7 +108,7 @@ let SampleSurvey = Survey(
                 // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
-            tag: "q6"
+            tag: "q6: pleasant"
         ),
         
         MCQ(
@@ -122,7 +121,7 @@ let SampleSurvey = Survey(
                 // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
-            tag: "q7"
+            tag: "q7: relaxed"
         ),
         
         MCQ(
@@ -135,7 +134,7 @@ let SampleSurvey = Survey(
                 // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
-            tag: "q8"
+            tag: "q8: happy"
         )
         
         

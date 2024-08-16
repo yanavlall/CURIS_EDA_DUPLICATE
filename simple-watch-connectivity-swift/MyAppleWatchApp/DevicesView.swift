@@ -7,6 +7,8 @@ import SwiftUI
 
 struct DevicesView: View {
     @ObservedObject var e4linkManager = E4linkManager.shared
+    @ObservedObject var workoutManager = WorkoutManager.shared
+    @ObservedObject var batteryMonitor = BatteryMonitor.shared
     @State var showDisconnectAlert = false
     @State var thresholdInput: String = ""
     @State var showThresholdAlert = false
@@ -29,8 +31,10 @@ struct DevicesView: View {
         }
         .background(Color.white.edgesIgnoringSafeArea(.all))
         .onAppear {
+            print(batteryMonitor.batteryLevel)
             if (!isFirstAppear) {
                 e4linkManager.authenticate()
+                workoutManager.requestAuthorization()
                 Task {
                     do {
                         try await e4linkManager.load()
@@ -55,9 +59,9 @@ struct DevicesView: View {
                 e4linkManager.restartDiscovery()
             }) {
                 Text("Rediscover")
-                    .padding()
+                    .padding(14)
                     .foregroundColor(.white)
-                    .background(Color.blue)
+                    .background(Color.blue.opacity(0.5))
                     .cornerRadius(25)
             }
         }
@@ -94,7 +98,7 @@ struct DevicesView: View {
                         Text(e4linkManager.deviceStatus == "Disconnected" ? "Connect" : "Disconnect")
                             .padding()
                             .foregroundColor(.white)
-                            .background(Color.blue.opacity(0.5))
+                            .background(Color.blue)
                             .cornerRadius(15)
                             .font(Font.system(.footnote, design: .rounded))
                     }
@@ -123,8 +127,8 @@ struct DevicesView: View {
             if e4linkManager.deviceStatus == "Connected" {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("EDA Value: \(e4linkManager.absGSR)")
-                    Text("Default Threshold: 3.0")
-                    Text("Unique Threshold: \(e4linkManager.threshold)")
+                    Text("Manual Threshold: \(e4linkManager.threshold)")            // CHANGE!!!
+                    Text("User Threshold: \(e4linkManager.threshold)")
                     Text("List Length: \(e4linkManager.GSRList.count)")
                     Text("Time: \(e4linkManager.current_index / e4linkManager.oneMinuteBufferSize) minute(s)")
                     Text("Feature Flag: \(e4linkManager.featureDetected)")
@@ -134,9 +138,19 @@ struct DevicesView: View {
                             .focused($isFocused)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .keyboardType(.decimalPad)
-                            .cornerRadius(10)
-                            .padding(5)
-                            .foregroundStyle(.white, .white)
+                            .preferredColorScheme(.light)
+                            .toolbar {
+                                ToolbarItemGroup(placement: .keyboard) {
+                                    Spacer()
+
+                                    Button(action: { isFocused = false }) {
+                                        Text("Dismiss")
+                                            .foregroundColor(.blue)
+                                            .font(.callout)
+                                            .fontWeight(.bold)
+                                    }
+                                }
+                            }
                         Button(action: {
                             if thresholdInput.isEmpty {
                                 showThresholdAlert = true
@@ -146,10 +160,10 @@ struct DevicesView: View {
                             isFocused = false
                         }) {
                             Text("Set")
-                                .padding(15)
+                                .padding(10)
                                 .foregroundColor(.white)
                                 .background(Color.blue)
-                                .cornerRadius(15)
+                                .cornerRadius(10)
                         }
                         .alert(isPresented: $showThresholdAlert) {
                             Alert(
@@ -185,5 +199,31 @@ struct DevicesView: View {
                 }
             }
         }
+    }
+}
+
+// CHANGE THIS???
+class BatteryMonitor: ObservableObject {
+    static let shared = BatteryMonitor()
+
+    @Published var batteryLevel: Float = 0.0
+    
+    init() {
+        UIDevice.current.isBatteryMonitoringEnabled = true
+        self.batteryLevel = UIDevice.current.batteryLevel
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(batteryLevelDidChange), name: UIDevice.batteryLevelDidChangeNotification, object: nil)
+    }
+    
+    @objc func batteryLevelDidChange(notification: Notification) {
+        self.batteryLevel = UIDevice.current.batteryLevel
+        if self.batteryLevel == 1 {
+            E4linkManager().notify(title: "Battery Levels Low", body: "!!")
+        }
+        print(self.batteryLevel)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIDevice.batteryLevelDidChangeNotification, object: nil)
     }
 }

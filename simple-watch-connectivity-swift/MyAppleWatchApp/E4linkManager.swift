@@ -13,7 +13,7 @@ class E4linkManager: NSObject, ObservableObject {
     @ObservedObject var dataManager = DataManager.shared
     @Published var devices: [EmpaticaDeviceManager] = []
     @Published var deviceStatus = "Disconnected"
-    @Published var showSurveyButton = true
+    @Published var showSurveyButton = false
     @Published var showSurvey = false
     
     var EDAstruct = CSVlog(filename: "EDA.csv")
@@ -27,8 +27,11 @@ class E4linkManager: NSObject, ObservableObject {
     var batteryLevel: Int = 0
     var didCollectData: Bool = false
     
-    var absGSR: Float = 0.0
+    var userThreshold: Float = 3.0
+    var manualThreshold: Float = 3.0
     var threshold: Float = 3.0
+    
+    var absGSR: Float = 0.0
     var GSRList: [Float] = []
     var current_index = 0
     var featureDetected: Bool = false

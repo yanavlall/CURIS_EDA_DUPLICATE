@@ -15,12 +15,13 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            Text(dataValue)
+            /*Text(dataValue)
                 .fontWeight(.semibold)
                 .padding()
             
             Text("Notification!")
-                .fontWeight(.semibold)
+                .fontWeight(.semibold)*/
+            Image("support")
         }
         .onAppear {
             workoutManager.requestAuthorization()

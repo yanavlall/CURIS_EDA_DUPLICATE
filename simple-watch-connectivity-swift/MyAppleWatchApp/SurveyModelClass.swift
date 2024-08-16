@@ -55,6 +55,33 @@ final class Survey: ObservableObject, Codable {
         }
         return nil
     }
+    
+    func validateCompletion() -> Bool {
+        for question in self.questions {
+            if let mcQuestion = question as? MultipleChoiceQuestion {
+                if mcQuestion.choices.allSatisfy({ !$0.selected }) {
+                    return false
+                }
+            } else if let binaryQuestion = question as? BinaryQuestion {
+                if binaryQuestion.choices.allSatisfy({ !$0.selected }) {
+                    return false
+                }
+            } else if let contactForm = question as? ContactFormQuestion {
+                if contactForm.emailAddress.isEmpty ||
+                   contactForm.name.isEmpty ||
+                   contactForm.company.isEmpty ||
+                   contactForm.phoneNumber.isEmpty ||
+                   contactForm.feedback.isEmpty {
+                    return false
+                }
+            } else if let commentsForm = question as? CommentsFormQuestion {
+                if commentsForm.feedback.isEmpty {
+                    return false
+                }
+            }
+        }
+        return true
+    }
 }
 
 // MARK: - SurveyItem Class
@@ -106,6 +133,8 @@ protocol SurveyQuestion: Codable {
     var visibilityLogic: VisibilityLogic? { get set }
 
     func findChoice(by id: UUID) -> MultipleChoiceResponse?
+    
+    func reset() // Added this method
 }
 
 extension SurveyQuestion {
@@ -170,6 +199,12 @@ class InlineMultipleChoiceQuestionGroup: ObservableObject, SurveyQuestion {
         self.questions = questions
         self.tag = tag
     }
+    
+    func reset() {
+        for question in self.questions {
+            question.reset()
+        }
+    }
 }
 
 class MultipleChoiceQuestion: ObservableObject, SurveyQuestion {
@@ -204,6 +239,13 @@ class MultipleChoiceQuestion: ObservableObject, SurveyQuestion {
 
     func findChoice(by id: UUID) -> MultipleChoiceResponse? {
         return choices.first { $0.uuid == id }
+    }
+    
+    func reset() {
+        for choice in self.choices {
+            choice.selected = false
+            choice.customTextEntry = nil
+        }
     }
 }
 
@@ -240,6 +282,12 @@ class BinaryQuestion: ObservableObject, SurveyQuestion {
     func findChoice(by id: UUID) -> MultipleChoiceResponse? {
         return choices.first { $0.uuid == id }
     }
+    
+    func reset() {
+        for choice in self.choices {
+            choice.selected = false
+        }
+    }
 }
 
 class ContactFormQuestion: ObservableObject, SurveyQuestion {
@@ -259,6 +307,14 @@ class ContactFormQuestion: ObservableObject, SurveyQuestion {
         self.title = title
         self.tag = tag
     }
+    
+    func reset() {
+        self.emailAddress = ""
+        self.name = ""
+        self.company = ""
+        self.phoneNumber = ""
+        self.feedback = ""
+    }
 }
 
 class CommentsFormQuestion: ObservableObject, SurveyQuestion {
@@ -276,6 +332,11 @@ class CommentsFormQuestion: ObservableObject, SurveyQuestion {
         self.title = title
         self.subtitle = subtitle
         self.tag = tag
+    }
+    
+    func reset() {
+        self.emailAddress = ""
+        self.feedback = ""
     }
 }
 
