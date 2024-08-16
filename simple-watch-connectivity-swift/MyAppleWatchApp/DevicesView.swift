@@ -127,8 +127,8 @@ struct DevicesView: View {
             if e4linkManager.deviceStatus == "Connected" {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("EDA Value: \(e4linkManager.absGSR)")
-                    Text("Manual Threshold: \(e4linkManager.threshold)")            // CHANGE!!!
-                    Text("User Threshold: \(e4linkManager.threshold)")
+                    Text("Threshold: \(e4linkManager.threshold)")
+                    // Text("User Threshold: \(e4linkManager.userThreshold == 0.0 ? "n/a" : \(e4linkManager.userThreshold))")
                     Text("List Length: \(e4linkManager.GSRList.count)")
                     Text("Time: \(e4linkManager.current_index / e4linkManager.oneMinuteBufferSize) minute(s)")
                     Text("Feature Flag: \(e4linkManager.featureDetected)")

@@ -26,9 +26,7 @@ class E4linkManager: NSObject, ObservableObject {
     
     var batteryLevel: Int = 0
     var didCollectData: Bool = false
-    
-    var userThreshold: Float = 3.0
-    var manualThreshold: Float = 3.0
+
     var threshold: Float = 3.0
     
     var absGSR: Float = 0.0
