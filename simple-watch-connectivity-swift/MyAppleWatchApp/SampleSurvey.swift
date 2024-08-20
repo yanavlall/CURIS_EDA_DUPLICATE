@@ -54,7 +54,6 @@ let SampleSurvey = Survey(
                 "A little",
                 "Somewhat",
                 "Very Much So"
-                // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
             tag: "q2: focused"
@@ -67,7 +66,6 @@ let SampleSurvey = Survey(
                 "A little",
                 "Somewhat",
                 "Very Much So"
-                // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
             tag: "q3: stressed"
@@ -79,7 +77,6 @@ let SampleSurvey = Survey(
                 "A little",
                 "Somewhat",
                 "Very Much So"
-                // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
             tag: "q4: excited"
@@ -92,7 +89,6 @@ let SampleSurvey = Survey(
                 "A little",
                 "Somewhat",
                 "Very Much So"
-                // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
             tag: "q5: anxious"
@@ -105,7 +101,6 @@ let SampleSurvey = Survey(
                 "A little",
                 "Somewhat",
                 "Very Much So"
-                // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
             tag: "q6: pleasant"
@@ -118,7 +113,6 @@ let SampleSurvey = Survey(
                 "A little",
                 "Somewhat",
                 "Very Much So"
-                // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
             tag: "q7: relaxed"
@@ -131,28 +125,10 @@ let SampleSurvey = Survey(
                 "A little",
                 "Somewhat",
                 "Very Much So"
-                // MCR("Other", allowsCustomTextEntry: true)
             ],
             multiSelect: false,
             tag: "q8: happy"
         )
-        
-        
-        /*InlineMultipleChoiceQuestionGroup(
-            title: "What new features are important to you?",
-            questions: [
-                importanceQuestion("Faster load times"),
-                importanceQuestion("Dark mode support"),
-                importanceQuestion("Lasers")
-            ],
-            tag: "importance-what-improvements"
-        ),
-        
-        askContactUs,
-        contactForm.setVisibleWhenSelected(askContactUs.choices.first!),
-        
-        askComments,
-        commentsForm.setVisibleWhenSelected(askComments.choices.first!)*/
     ],
     version: "001"
 )

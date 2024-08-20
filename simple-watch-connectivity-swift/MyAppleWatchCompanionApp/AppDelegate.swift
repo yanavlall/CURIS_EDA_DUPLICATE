@@ -12,6 +12,7 @@ class AppDelegate: NSObject, WKApplicationDelegate {
     func handle(_ workoutConfiguration: HKWorkoutConfiguration) {
         Task {
             do {
+                workoutManager.resetWorkout()
                 try await workoutManager.startWorkout(workoutConfiguration: workoutConfiguration)
                 print("Successfully started workout.")
             } catch {

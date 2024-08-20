@@ -10,6 +10,7 @@ class E4linkManager: NSObject, ObservableObject {
     static let shared = E4linkManager()
     
     @ObservedObject var watchConnectivityManager = WatchConnectivityManager.shared
+    @ObservedObject var workoutManager = WorkoutManager.shared
     @ObservedObject var dataManager = DataManager.shared
     @Published var devices: [EmpaticaDeviceManager] = []
     @Published var deviceStatus = "Disconnected"
@@ -177,19 +178,21 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     @MainActor
     func didReceiveGSR(_ gsr: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
         print("EDA value : \(self.absGSR), Current Index: \(self.current_index)")
-                
+        
+        self.absGSR = abs(gsr)
+
         if (!self.EDAstruct.headerSet) {
-            self.EDAstruct.content.append(String(timestamp)+"\n")
-            self.EDAstruct.content.append("4.000000"+"\n")
+            self.EDAstruct.content.append("Timestamp, GSR Value\n")
             self.EDAstruct.headerSet = true
         }
-        self.EDAstruct.content.append(String(self.absGSR)+"\n")
+        self.EDAstruct.content.append("\(timestamp), \(self.absGSR)\n")
+        
+        // Update state variables
         self.didCollectData = true
-
-        self.absGSR = abs(gsr)
-        self.GSRList.append(absGSR)
+        self.GSRList.append(self.absGSR)
         self.current_index += 1
         
+        // Save data if required
         if self.shouldPersistData {
             Task {
                 do {
@@ -231,7 +234,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                     print("Flag up")
                     
                     self.watchConnectivityManager.sendDataFromPhone()
-                    self.notify(title: "Feature Detected", body: "EDA level above threshold.")
+                    self.notify(title: "E4 Feature Detected", body: "EDA level above threshold.")
                     self.showSurveyButton = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1800) {
                         self.showSurveyButton = false
@@ -250,7 +253,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                     self.featureIndices.append((self.feature_start, self.feature_end))
                     
                     self.watchConnectivityManager.sendDataFromPhonePt2()
-                    self.notify(title: "Feature Ended", body: "EDA level below threshold.")
+                    self.notify(title: "E4 Feature Ended", body: "EDA level below threshold.")
                 }
             }
         }
@@ -343,44 +346,44 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     }
         return meanChunk > self.threshold
     }
-    
+
     func didReceiveBVP(_ bvp: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
         if (!self.BVPstruct.headerSet) {
-            self.BVPstruct.content.append(String(timestamp)+"\n")
-            self.BVPstruct.content.append("64.000000"+"\n")
+            self.BVPstruct.content.append("Timestamp, BVP\n")
             self.BVPstruct.headerSet = true
         }
-        self.BVPstruct.content.append(String(bvp)+"\n")
+        self.BVPstruct.content.append("\(timestamp), \(bvp)\n")
     }
     
     func didReceiveTemperature(_ temp: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
         if (!self.TEMPstruct.headerSet) {
-            self.TEMPstruct.content.append(String(timestamp)+"\n")
-            self.TEMPstruct.content.append("4.000000"+"\n")
+            self.TEMPstruct.content.append("Timestamp, Temperature\n")
             self.TEMPstruct.headerSet = true
         }
-        self.TEMPstruct.content.append(String(temp)+"\n")
+        self.TEMPstruct.content.append("\(timestamp), \(temp)\n")
     }
     
     func didReceiveAccelerationX(_ x: Int8, y: Int8, z: Int8, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
         if (!self.ACCstruct.headerSet) {
-            self.ACCstruct.content.append(String(timestamp)+"\n")
-            self.ACCstruct.content.append("32.000000, 32.000000, 32.000000"+"\n")
+            self.ACCstruct.content.append("Timestamp, AccelerationX, AccelerationY, AccelerationZ\n")
             self.ACCstruct.headerSet = true
         }
-        self.ACCstruct.content.append(String(x)+","+String(y)+","+String(z)+"\n")
+        self.ACCstruct.content.append("\(timestamp),\(x),\(y),\(z)\n")
     }
     
     func didReceiveIBI(_ ibi: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
         if (!self.IBIstruct.headerSet) {
-            self.IBIstruct.content.append(String(timestamp)+", IBI\n")
+            self.IBIstruct.content.append("Timestamp, IBI, Difference\n")
             self.IBIstruct.headerSet = true
         }
+        
         if (self.IBIstruct.prevSet) {
             let diff = ibi - self.IBIstruct.prev
-            self.IBIstruct.content.append(String(ibi)+","+String(diff))
+            self.IBIstruct.content.append("\(timestamp),\(ibi),\(diff)\n")
             self.IBIstruct.prev = ibi
         } else {
+            // For the first IBI value, there's no difference to calculate
+            self.IBIstruct.content.append("\(timestamp),\(ibi),\n")
             self.IBIstruct.prev = ibi
             self.IBIstruct.prevSet = true
         }
@@ -409,6 +412,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             break
         case kDeviceStatusConnected:
             print("[didUpdate] Connected \(device.serialNumber!).")
+            workoutManager.startWatchWorkout()
             break
         case kDeviceStatusFailedToConnect:
             print("[didUpdate] Failed to connect \(device.serialNumber!).")

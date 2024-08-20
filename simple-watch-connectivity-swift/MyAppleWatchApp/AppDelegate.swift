@@ -10,7 +10,7 @@ import HealthKit
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     @ObservedObject var e4linkManager = E4linkManager.shared
     @ObservedObject var workoutManager = WorkoutManager.shared
-    @Published var backgroundTask: UIBackgroundTaskIdentifier = .invalid
+    var backgroundTask: UIBackgroundTaskIdentifier = .invalid
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge, .criticalAlert]) { granted, error in
@@ -28,18 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().setBadgeCount(0)
         
         EmpaticaAPI.initialize()
-        
-        Task {
-            do {
-                let configuration = HKWorkoutConfiguration()
-                configuration.activityType = .other
-                configuration.locationType = .unknown
-                try await workoutManager.healthStore.startWatchApp(toHandle: configuration)
-            } catch {
-                print("Failed to start workout on the paired watch.")
-            }
-        }
-        
+        workoutManager.requestAuth()
         return true
     }
     
@@ -55,13 +44,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        self.startBackgroundTask()
+        startBackgroundTask()
         EmpaticaAPI.prepareForBackground()
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive.
-        self.endBackgroundTask()
+        endBackgroundTask()
         EmpaticaAPI.prepareForResume()
     }
     
@@ -87,16 +76,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func startBackgroundTask() {
-        self.backgroundTask = UIApplication.shared.beginBackgroundTask {
+        backgroundTask = UIApplication.shared.beginBackgroundTask {
             self.endBackgroundTask()
         }
-        assert(self.backgroundTask != .invalid)
+        assert(backgroundTask != .invalid)
     }
 
     func endBackgroundTask() {
-        if self.backgroundTask != .invalid {
-            UIApplication.shared.endBackgroundTask(self.backgroundTask)
-            self.backgroundTask = .invalid
+        if backgroundTask != .invalid {
+            UIApplication.shared.endBackgroundTask(backgroundTask)
+            backgroundTask = .invalid
         }
     }
 }

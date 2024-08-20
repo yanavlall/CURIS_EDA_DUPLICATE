@@ -5,6 +5,7 @@
 
 import SwiftUI
 import WatchConnectivity
+import WatchKit
 import Combine
 
 struct ContentView: View {
@@ -15,21 +16,16 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            /*Text(dataValue)
-                .fontWeight(.semibold)
-                .padding()
-            
-            Text("Notification!")
-                .fontWeight(.semibold)*/
             Image("support")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: WKInterfaceDevice.current().screenBounds.width, height: WKInterfaceDevice.current().screenBounds.height)
         }
-        .onAppear {
-            workoutManager.requestAuthorization()
-        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea()
         .onReceive(
             Just(watchSession.receivedData).delay(for: 1, scheduler: RunLoop.main)
-        )
-        { newValue in
+        ) { newValue in
             self.dataValue = watchSession.receivedData
         }
     }

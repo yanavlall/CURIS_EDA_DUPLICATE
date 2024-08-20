@@ -4,6 +4,9 @@
 //
 
 import HealthKit
+#if os(watchOS)
+import WatchKit
+#endif
 
 @MainActor
 class WorkoutManager: NSObject, ObservableObject {
@@ -25,15 +28,49 @@ class WorkoutManager: NSObject, ObservableObject {
 // MARK: - Workout session management
 //
 extension WorkoutManager {
-    func requestAuthorization() {
-        Task {
-            do {
-                try await healthStore.requestAuthorization(toShare: typesToShare, read: typesToRead)
-            } catch {
-                print("Failed to request authorization: \(error).")
+    #if os(iOS)
+    func requestAuth() {
+        healthStore.requestAuthorization(toShare: typesToShare, read: typesToRead) { success, error in
+            if success {
+                print("Authorization success!")
+            } else {
+                print("Authorization failed or was not granted.")
+                if let error = error {
+                    print("Error: \(error.localizedDescription)")
+                }
             }
         }
     }
+    
+    func startWatchWorkout() {
+        Task {
+            do {
+                let configuration = HKWorkoutConfiguration()
+                configuration.activityType = .other
+                configuration.locationType = .unknown
+                try await self.healthStore.startWatchApp(toHandle: configuration)
+            } catch {
+                print("Failed to start workout on the paired watch. Error: \(error)")
+            }
+        }
+    }
+    #endif
+    
+    #if os(watchOS)
+    func startWorkout(workoutConfiguration: HKWorkoutConfiguration) async throws {
+        guard sessionState == .notStarted else {
+            print("Workout is already started or in progress.")
+            return
+        }
+
+        session = try HKWorkoutSession(healthStore: healthStore, configuration: workoutConfiguration)
+        session?.delegate = self
+        session?.startActivity(with: Date())
+        
+        WKInterfaceDevice.current().play(.success)
+        sessionState = .running
+    }
+    #endif
     
     func resetWorkout() {
         self.session?.end()

@@ -34,7 +34,6 @@ struct DevicesView: View {
             print(batteryMonitor.batteryLevel)
             if (!isFirstAppear) {
                 e4linkManager.authenticate()
-                workoutManager.requestAuthorization()
                 Task {
                     do {
                         try await e4linkManager.load()
@@ -202,7 +201,6 @@ struct DevicesView: View {
     }
 }
 
-// CHANGE THIS???
 class BatteryMonitor: ObservableObject {
     static let shared = BatteryMonitor()
 
@@ -217,8 +215,9 @@ class BatteryMonitor: ObservableObject {
     
     @objc func batteryLevelDidChange(notification: Notification) {
         self.batteryLevel = UIDevice.current.batteryLevel
-        if self.batteryLevel == 1 {
-            E4linkManager().notify(title: "Battery Levels Low", body: "!!")
+        if self.batteryLevel <= 0.05 {
+            E4linkManager().saveSession()
+            E4linkManager().notify(title: "iPhone Battery Low", body: "Session saved to prevent data loss. Please charge phone.")
         }
         print(self.batteryLevel)
     }

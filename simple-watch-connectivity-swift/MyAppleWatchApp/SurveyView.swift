@@ -211,8 +211,7 @@ struct YesNoButtonStyle: ButtonStyle {
             .foregroundColor(Color.white)
             .opacity(configuration.isPressed ? 0.7 : 1)
             .scaleEffect(configuration.isPressed ? 0.8 : 1)
-            .animation(.easeInOut(duration: 0.2))
-            
+            .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
     }
 }
 
@@ -284,8 +283,7 @@ struct BinaryChoiceQuestionView : View {
         .frame(maxWidth: .infinity) // stretch whole width
         //.background(Color.red)
         .overlay(Rectangle().frame(width: autoAdvanceProgress, height: 3, alignment: .top).foregroundColor(Color(.systemBlue)), alignment: .top)
-            .animation(.easeInOut(duration: 0.51))
-        
+        .animation(.easeInOut(duration: 0.51), value: autoAdvanceProgress)
     }
     
     // Update the local @State with selected choice
@@ -653,27 +651,23 @@ struct MultipleChoiceResponseView : View {
             if choice.allowsCustomTextEntry && choice.selected {
                 
                 HStack {
-                    
-                    TextFieldWithDone(placeHolder:"Tap to Edit!", text: $customTextEntry, keyType: .default)
-                        .onChange(of: customTextEntry, perform: { value in
-                            self.updateCustomText(choice, value)
-                        })
+                    TextFieldWithDone(placeHolder: "Tap to Edit!", text: $customTextEntry, keyType: .default)
+                        .onChange(of: customTextEntry) { oldValue, newValue in
+                            self.updateCustomText(choice, newValue)
+                        }
                         .padding(EdgeInsets(top: 16, leading: 10, bottom: 3, trailing: 10))
                         .foregroundColor(Color(.systemGray2))
                         .id(Self.OtherTextFieldID)
-
-                        .onAppear(perform: {
+                        .onAppear {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 self.scrollProxy.scrollTo(Self.OtherTextFieldID, anchor: .bottom)
-
+                                
                                 if let text = choice.customTextEntry {
                                     self.customTextEntry = text
                                 }
                             }
-                        })
-                    
-                }
-                
+                        }
+                    }
                 
                 .background(
                     RoundedCornersShape(corners: [.bottomLeft, .bottomRight], radius: 14, extraHeight: 22)
@@ -684,8 +678,6 @@ struct MultipleChoiceResponseView : View {
                 .padding(EdgeInsets.init(top: 5, leading: 35, bottom: 12, trailing: 35))
                 .offset(y: -24.0)
                 .zIndex(-1)
-                
-                
                 
             }
             
