@@ -6,7 +6,6 @@
 import SwiftUI
 import Combine
 
-
 // TODO: the introspect lib might also be useful
 // https://stackoverflow.com/questions/59003612/extend-swiftui-keyboard-with-custom-button
 
@@ -33,16 +32,12 @@ struct TextEditorWithDone: UIViewRepresentable {
         textfield.inputAccessoryView = toolBar
         textfield.delegate = context.coordinator
         return textfield
-        
     }
     
     func updateUIView(_ uiView: UITextView, context: Context) {
         uiView.text = text
-        
     }
-    
 }
-
 
 extension TextEditorWithDone {
     class Coordinator: NSObject, UITextViewDelegate {
@@ -65,7 +60,6 @@ extension  UITextView{
     @objc func doneButtonTapped(button:UIBarButtonItem) -> Void {
        self.resignFirstResponder()
     }
-
 }
 
 struct TextFieldWithDone: UIViewRepresentable {
@@ -127,7 +121,6 @@ extension  UITextField{
     @objc func doneButtonTapped(button:UIBarButtonItem) -> Void {
        self.resignFirstResponder()
     }
-
 }
 
 extension UIView {
@@ -139,7 +132,6 @@ extension UIView {
                 return firstResponder
             }
         }
-
         return nil
     }
 }
@@ -184,12 +176,8 @@ struct CustomButtonStyle: ButtonStyle {
     let bgColor : Color
     func makeBody(configuration: Self.Configuration) -> some View {
         return configuration.label
-            //.padding(EdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20))
-            //.frame(width: 104, height: 40)
-            
             .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
             .frame(minWidth: 104, minHeight: 40)
-            
             .background(bgColor)
             .cornerRadius(20.0)
             .foregroundColor(Color.white)
@@ -251,8 +239,6 @@ struct BinaryChoiceQuestionView : View {
     var body : some View {
         
         VStack {
-            
-            //Text(question.title).font(.title).padding(16)
             Text(question.title).font(.title).fontWeight(.bold).padding(16)
             
             //Spacer()
@@ -318,10 +304,7 @@ struct BinaryChoiceQuestionView : View {
             }
             self.autoAdvanceProgress = 0
         }
-        
-        
     }
-    
 }
 
 
@@ -331,14 +314,11 @@ struct ContactFormQuestionView : View {
     @ObservedObject var question : ContactFormQuestion
     
     init(question: ContactFormQuestion ) {
-        
         self.question = question
     }
     
-    
     var body : some View {
         VStack {
-            //Text(question.title).font(.title).padding(16)
             Text(question.title).font(.title).fontWeight(.bold).padding(16)
 
             VStack(alignment: .leading) {
@@ -350,7 +330,6 @@ struct ContactFormQuestionView : View {
                     .disableAutocorrection(true)
             }.padding()
             
-            
             VStack(alignment: .leading) {
                 Text("Email Address")
                     .font(.callout)
@@ -359,7 +338,6 @@ struct ContactFormQuestionView : View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .disableAutocorrection(true)
                     .textContentType(.emailAddress)
-                    
                     
             }.padding()
             
@@ -372,7 +350,6 @@ struct ContactFormQuestionView : View {
                     .disableAutocorrection(true)
             }.padding()
             
-            
             VStack(alignment: .leading) {
                 Text("Comments ( optional )")
                     .font(.callout)
@@ -381,28 +358,17 @@ struct ContactFormQuestionView : View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .disableAutocorrection(true)
             }.padding()
-                    
         }
-        
-                
     }
-    
-    
 }
-
-
 
 struct CommentsFormQuestionView : View {
     
     @ObservedObject var question : CommentsFormQuestion
-    
-    
-    
+
     var body : some View {
         VStack {
-            //Text(question.title).font(.title).padding(16)
             Text(question.title).font(.title).fontWeight(.bold).padding(EdgeInsets(top: 12, leading: 28, bottom: 2, trailing: 28))
-            //Text(question.subtitle).font(.title3).background(Color.red).padding(16)
             Text(question.subtitle).font(.title3).italic().foregroundColor(Color(.secondaryLabel))
                 .padding(EdgeInsets(top: 0, leading: 28, bottom: 1, trailing: 28))
             
