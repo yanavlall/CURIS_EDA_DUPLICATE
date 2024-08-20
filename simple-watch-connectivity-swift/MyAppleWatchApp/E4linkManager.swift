@@ -406,13 +406,14 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             self.saveSession()
             self.dataManager.reloadFiles()
             self.restartDiscovery()
+            self.watchConnectivityManager.sendWorkoutEndFromPhone()
             break
         case kDeviceStatusConnecting:
             print("[didUpdate] Connecting \(device.serialNumber!).")
             break
         case kDeviceStatusConnected:
             print("[didUpdate] Connected \(device.serialNumber!).")
-            workoutManager.startWatchWorkout()
+            self.workoutManager.startWatchWorkout()
             break
         case kDeviceStatusFailedToConnect:
             print("[didUpdate] Failed to connect \(device.serialNumber!).")
@@ -481,7 +482,6 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     }
 
     func load() async throws {
-        print("LOADED")
         let task = Task<[Float], Error> {
             let fileURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("gsrlist.data")
             guard let data = try? Data(contentsOf: fileURL) else {
@@ -494,7 +494,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         
         self.GSRList = list
         self.current_index = self.GSRList.count
-        print("COUNT: ", self.GSRList.count)
+        print("GSRLIST COUNT: ", self.GSRList.count)
     }
 
     func save(gsrList: [Float]) async throws {

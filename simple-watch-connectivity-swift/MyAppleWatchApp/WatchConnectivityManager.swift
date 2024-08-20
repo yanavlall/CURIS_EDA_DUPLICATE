@@ -42,6 +42,13 @@ class WatchConnectivityManager: NSObject, ObservableObject, WCSessionDelegate {
         print("Data sent: \(dict)")
     }
     
+    func sendWorkoutEndFromPhone() {
+        let dict: [String: Any] = ["key": "Data Received", "type": "third"]
+        
+        wcSession?.sendMessage(dict, replyHandler: nil)
+        print("Data sent: \(dict)")
+    }
+    
     // Delegate Watch Session.
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
