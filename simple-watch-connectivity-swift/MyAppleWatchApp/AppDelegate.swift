@@ -58,7 +58,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if (e4linkManager.didCollectData) {
             e4linkManager.saveSession()
         }
-        e4linkManager.notify(title: "E4 Terminated", body: "Please reopen app and restart discovery.")
+        e4linkManager.notify(title: "E4 Terminated", body: "Please reopen app and restart discovery.", sound: "default")
         NotificationCenter.default.post(name: UIApplication.willTerminateNotification, object: nil)
     }
     

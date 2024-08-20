@@ -217,7 +217,7 @@ class BatteryMonitor: ObservableObject {
         self.batteryLevel = UIDevice.current.batteryLevel
         if self.batteryLevel <= 0.05 {
             E4linkManager().saveSession()
-            E4linkManager().notify(title: "iPhone Battery Low", body: "Session saved to prevent data loss. Please charge phone.")
+            E4linkManager().notify(title: "iPhone Battery Low", body: "Session saved to prevent data loss. Please charge phone.", sound: "default")
         }
         print(self.batteryLevel)
     }

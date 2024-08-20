@@ -68,12 +68,12 @@ class E4linkManager: NSObject, ObservableObject {
         }
     }
     
-    func notify(title: String, body: String) {
+    func notify(title: String, body: String, sound: String) {
         let center = UNUserNotificationCenter.current()
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
-        content.sound = .default // Ensure sound is set.
+        content.sound = UNNotificationSound(named: UNNotificationSoundName(sound)) // Ensure sound is set.
         content.badge = NSNumber(value: 1) // Optionally set badge.
 
         let notification = UNNotificationRequest(identifier: "com.example.mynotification", content: content, trigger: nil)
@@ -234,7 +234,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                     print("Flag up")
                     
                     self.watchConnectivityManager.sendDataFromPhone()
-                    self.notify(title: "E4 Feature Detected", body: "EDA level above threshold.")
+                    self.notify(title: "E4 Feature Detected", body: "EDA level above threshold.", sound: "positive.wav")
                     self.showSurveyButton = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1800) {
                         self.showSurveyButton = false
@@ -253,7 +253,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                     self.featureIndices.append((self.feature_start, self.feature_end))
                     
                     self.watchConnectivityManager.sendDataFromPhonePt2()
-                    self.notify(title: "E4 Feature Ended", body: "EDA level below threshold.")
+                    self.notify(title: "E4 Feature Ended", body: "EDA level below threshold.", sound: "negative.wav")
                 }
             }
         }
@@ -402,7 +402,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         switch status {
         case kDeviceStatusDisconnected:
             print("[didUpdate] Disconnected \(device.serialNumber!).")
-            self.notify(title: "E4 Disconnected", body: "Rediscover and reconnect to continue streaming.")
+            self.notify(title: "E4 Disconnected", body: "Rediscover and reconnect to continue streaming.", sound: "default")
             self.saveSession()
             self.dataManager.reloadFiles()
             self.restartDiscovery()
@@ -432,13 +432,13 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     func didUpdate(onWristStatus: SensorStatus, forDevice device: EmpaticaDeviceManager!) {
         switch onWristStatus {
         case kE2SensorStatusNotOnWrist:
-            self.notify(title: "E4 Not on Wrist", body: "Adjust sensor more tightly on wrist.")
+            self.notify(title: "E4 Not on Wrist", body: "Adjust sensor more tightly on wrist.", sound: "default")
             break
         case kE2SensorStatusOnWrist:
-            self.notify(title: "E4 Looks Great", body: "Sensor is attached well. Thank you!")
+            self.notify(title: "E4 Looks Great", body: "Sensor is attached well. Thank you!", sound: "default")
             break
         case kE2SensorStatusDead:
-            self.notify(title: "E4 Out of Battery", body: "Session saved. Charge sensor to continue use.")
+            self.notify(title: "E4 Out of Battery", body: "Session saved. Charge sensor to continue use.", sound: "default")
             self.saveSession()
             break
         default:

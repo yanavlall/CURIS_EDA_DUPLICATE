@@ -44,9 +44,9 @@ extension WatchSession: WCSessionDelegate {
                 let type = message["type"] as? String
                 // Trigger haptic feedback based on the message content.
                 if type == "first" {
-                    WKInterfaceDevice.current().play(.success)
+                    WKInterfaceDevice.current().play(.directionUp)
                 } else if type == "second" {
-                    WKInterfaceDevice.current().play(.failure)
+                    WKInterfaceDevice.current().play(.directionDown)
                 } else {
                     WorkoutManager.shared.resetWorkout()
                 }
