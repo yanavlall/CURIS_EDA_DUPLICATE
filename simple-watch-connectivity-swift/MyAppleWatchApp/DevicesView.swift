@@ -82,7 +82,7 @@ struct DevicesView: View {
                         Text("Status: \(e4linkManager.deviceStatus)")
                             .font(.caption)
                             .foregroundColor(.gray)
-                        Text("Battery: \(e4linkManager.deviceStatus == "Disconnected" ? "n/a" : "\(e4linkManager.batteryLevel)")")
+                        Text("Battery: \(e4linkManager.deviceStatus == "Disconnected" ? "n/a" : "\(e4linkManager.batteryLevel)%")")
                             .font(.caption)
                             .foregroundColor(.gray)
                     }
