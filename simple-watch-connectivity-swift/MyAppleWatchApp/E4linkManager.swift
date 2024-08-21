@@ -28,12 +28,12 @@ class E4linkManager: NSObject, ObservableObject {
     var batteryLevel: Int = 0
     var didCollectData: Bool = false
 
-    var threshold: Float = 3.0
+    @Published var threshold: Float = 3.0
     
-    var absGSR: Float = 0.0
+    @Published var absGSR: Float = 0.0
+    @Published var featureDetected: Bool = false
     var GSRList: [Float] = []
     var current_index = 0
-    var featureDetected: Bool = false
     var shouldPersistData: Bool = true
     var baseline: Float = 0.0
     var flag: Bool = false
@@ -175,89 +175,89 @@ extension E4linkManager: EmpaticaDelegate {
 }
 
 extension E4linkManager: EmpaticaDeviceDelegate {
-    @MainActor
     func didReceiveGSR(_ gsr: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
-        print("EDA value : \(self.absGSR), Current Index: \(self.current_index)")
-        
-        self.absGSR = abs(gsr)
-
-        if (!self.EDAstruct.headerSet) {
-            self.EDAstruct.content.append("Timestamp, GSR Value\n")
-            self.EDAstruct.headerSet = true
-        }
-        self.EDAstruct.content.append("\(timestamp), \(self.absGSR)\n")
-        
-        // Update state variables
-        self.didCollectData = true
-        self.GSRList.append(self.absGSR)
-        self.current_index += 1
-        
-        // Save data if required
-        if self.shouldPersistData {
-            Task {
-                do {
-                    try await self.save(gsrList: self.GSRList)
-                } catch {
-                    fatalError(error.localizedDescription)
-                }
-            }
-        }
-        
-        // 6 hour data collection
-        if self.isCollectingInitialData {
-            if self.GSRList.count >= self.collectionDuration {
-                
-                self.isCollectingInitialData = false
-                
-                // Clean the signal before calculations
-                let cleanedSignal = self.smooth(signal: self.GSRList, windowSize: 20)
-                
-                self.threshold = self.calculateThreshold(from: cleanedSignal)
-                
-                self.lastFeatureCheckIndex = self.current_index
-                print("Initial data collection completed. Baseline: \(self.baseline), Threshold: \(self.threshold), Time: \(self.current_index / self.oneMinuteBufferSize)")
-                
-                // Stop persisting data after reaching collectionDuration
-                self.shouldPersistData = false
-            }
-        // Real-time feature detection starts
-        }
+        DispatchQueue.main.async {
+            print("EDA value : \(self.absGSR), Current Index: \(self.current_index)")
             
-        if !self.featureDetected {
-            if (self.current_index - self.lastFeatureCheckIndex) % self.oneMinuteBufferSize == 0 {
-                self.lastFeatureCheckIndex = self.current_index
-                print("One Minute Passed, Feature Flag is down \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
-                if self.didDetectFeature(signal: self.GSRList, currentIndex: self.current_index) {
-                    self.featureDetected = true
-                    self.feature_start = self.current_index
-                    print("Feature detection started at index \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
-                    print("Flag up")
-                    
-                    self.watchConnectivityManager.sendDataFromPhone()
-                    self.notify(title: "E4 Feature Detected", body: "EDA level above threshold.", sound: "positive.wav")
-                    self.showSurveyButton = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1800) {
-                        self.showSurveyButton = false
+            self.absGSR = abs(gsr)
+            
+            if (!self.EDAstruct.headerSet) {
+                self.EDAstruct.content.append("Timestamp, GSR Value\n")
+                self.EDAstruct.headerSet = true
+            }
+            self.EDAstruct.content.append("\(timestamp), \(self.absGSR)\n")
+            
+            // Update state variables
+            self.didCollectData = true
+            self.GSRList.append(self.absGSR)
+            self.current_index += 1
+            
+            // Save data if required
+            if self.shouldPersistData {
+                Task {
+                    do {
+                        try await self.save(gsrList: self.GSRList)
+                    } catch {
+                        fatalError(error.localizedDescription)
                     }
                 }
             }
-        
-        } else {
-            if (self.current_index - self.feature_start) % self.oneMinuteBufferSize == 0 {
-                print("One Minute Passed, Feature Flag is up at index:\(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
-                if !self.postFeatureCheck(signal: self.GSRList, currentIndex: self.current_index) {
-                    self.featureDetected = false
-                    self.feature_end = self.current_index
-                    print("Feature detection ended at index \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
-                    self.FEATUREstruct.content.append(String(self.feature_start)+","+String(self.feature_end)+"\n")
-                    self.featureIndices.append((self.feature_start, self.feature_end))
+            
+            // 6 hour data collection
+            if self.isCollectingInitialData {
+                if self.GSRList.count >= self.collectionDuration {
                     
-                    self.watchConnectivityManager.sendDataFromPhonePt2()
-                    self.notify(title: "E4 Feature Ended", body: "EDA level below threshold.", sound: "negative.wav")
+                    self.isCollectingInitialData = false
+                    
+                    // Clean the signal before calculations
+                    let cleanedSignal = self.smooth(signal: self.GSRList, windowSize: 20)
+                    
+                    self.threshold = self.calculateThreshold(from: cleanedSignal)
+                    
+                    self.lastFeatureCheckIndex = self.current_index
+                    print("Initial data collection completed. Baseline: \(self.baseline), Threshold: \(self.threshold), Time: \(self.current_index / self.oneMinuteBufferSize)")
+                    
+                    // Stop persisting data after reaching collectionDuration
+                    self.shouldPersistData = false
+                }
+                // Real-time feature detection starts
+            }
+            
+            if !self.featureDetected {
+                if (self.current_index - self.lastFeatureCheckIndex) % self.oneMinuteBufferSize == 0 {
+                    self.lastFeatureCheckIndex = self.current_index
+                    print("One Minute Passed, Feature Flag is down \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
+                    if self.didDetectFeature(signal: self.GSRList, currentIndex: self.current_index) {
+                        self.featureDetected = true
+                        self.feature_start = self.current_index
+                        print("Feature detection started at index \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
+                        print("Flag up")
+                        
+                        self.watchConnectivityManager.sendDataFromPhone()
+                        self.notify(title: "E4 Feature Detected", body: "EDA level above threshold.", sound: "positive.wav")
+                        self.showSurveyButton = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1800) {
+                            self.showSurveyButton = false
+                        }
+                    }
+                }
+                
+            } else {
+                if (self.current_index - self.feature_start) % self.oneMinuteBufferSize == 0 {
+                    print("One Minute Passed, Feature Flag is up at index:\(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
+                    if !self.postFeatureCheck(signal: self.GSRList, currentIndex: self.current_index) {
+                        self.featureDetected = false
+                        self.feature_end = self.current_index
+                        print("Feature detection ended at index \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
+                        self.FEATUREstruct.content.append(String(self.feature_start)+","+String(self.feature_end)+"\n")
+                        self.featureIndices.append((self.feature_start, self.feature_end))
+                        
+                        self.watchConnectivityManager.sendDataFromPhonePt2()
+                        self.notify(title: "E4 Feature Ended", body: "EDA level below threshold.", sound: "negative.wav")
+                    }
                 }
             }
         }
-        objectWillChange.send()
     }
     
     func calculateThreshold(from data: [Float]) -> Float {
@@ -389,7 +389,6 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         }
     }
 
-    @MainActor
     func didReceiveBatteryLevel(_ level: Float, withTimestamp timestamp: Double, fromDevice: EmpaticaDeviceManager!) {
         self.batteryLevel = Int(level * 100)
     }
@@ -428,7 +427,6 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         self.deviceStatus = deviceStatusDisplay(status: device.deviceStatus)
     }
     
-    @MainActor
     func didUpdate(onWristStatus: SensorStatus, forDevice device: EmpaticaDeviceManager!) {
         switch onWristStatus {
         case kE2SensorStatusNotOnWrist:
