@@ -9,7 +9,6 @@ import WatchKit
 import Combine
 
 struct ContentView: View {
-    @ObservedObject var workoutManager = WorkoutManager.shared
     @ObservedObject var watchSession = WatchSession.shared
     
     @State var dataValue = ""

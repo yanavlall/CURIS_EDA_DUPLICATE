@@ -3,11 +3,7 @@
 //  MyAppleWatchApp
 //
 
-import SwiftUI
-
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, UIGestureRecognizerDelegate {
-    @ObservedObject var e4linkManager = E4linkManager.shared
-    
     // file:///var/mobile/Containers/Data/Application/D4BD4F66-E243-44A7-AF99-8C6ACDDDAF99/Documents/ //
     let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     
@@ -79,12 +75,12 @@ extension SceneDelegate : SurveyViewDelegate {
             question.reset()
         }
 
-        e4linkManager.showSurvey = false
-        e4linkManager.showSurveyButton = false
+        E4linkManager.shared.showSurvey = false
+        E4linkManager.shared.showSurveyButton = false
     }
     
     func surveyDeclined() { 
-        e4linkManager.showSurvey = false
+        E4linkManager.shared.showSurvey = false
     }
     
     func surveyRemindMeLater() { }

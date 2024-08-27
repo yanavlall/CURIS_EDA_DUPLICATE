@@ -48,7 +48,7 @@ extension WatchSession: WCSessionDelegate {
                 } else if type == "second" {
                     WKInterfaceDevice.current().play(.directionDown)
                 } else {
-                    WorkoutManager.shared.resetWorkout()
+                    exit(0)
                 }
             }
         }

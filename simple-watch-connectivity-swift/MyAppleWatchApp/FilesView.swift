@@ -7,7 +7,6 @@ import SwiftUI
 
 struct FilesView: View {
     @ObservedObject var dataManager = DataManager.shared
-    @ObservedObject var watchConnectivityManager = WatchConnectivityManager.shared
     @State var showSurveyAlert = false
     
     var body: some View {

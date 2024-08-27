@@ -7,7 +7,6 @@ import SwiftUI
 
 struct DevicesView: View {
     @ObservedObject var e4linkManager = E4linkManager.shared
-    @ObservedObject var workoutManager = WorkoutManager.shared
     @ObservedObject var batteryMonitor = BatteryMonitor.shared
     @State var showDisconnectAlert = false
     @State var thresholdInput: String = ""
@@ -126,8 +125,7 @@ struct DevicesView: View {
             if e4linkManager.deviceStatus == "Connected" {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("EDA Value: \(e4linkManager.absGSR)")
-                    Text("Threshold: \(e4linkManager.threshold)")
-                    // Text("User Threshold: \(e4linkManager.userThreshold == 0.0 ? "n/a" : \(e4linkManager.userThreshold))")
+                    Text("Threshold: \(e4linkManager.threshold == 0.0 ? "n/a" : String(e4linkManager.threshold))")
                     Text("List Length: \(e4linkManager.GSRList.count)")
                     Text("Time: \(e4linkManager.current_index / e4linkManager.oneMinuteBufferSize) minute(s)")
                     Text("Feature Flag: \(e4linkManager.featureDetected)")
@@ -155,6 +153,7 @@ struct DevicesView: View {
                                 showThresholdAlert = true
                             } else {
                                 e4linkManager.threshold = Float(thresholdInput) ?? e4linkManager.threshold
+                                thresholdInput = ""
                             }
                             isFocused = false
                         }) {
@@ -215,9 +214,9 @@ class BatteryMonitor: ObservableObject {
     
     @objc func batteryLevelDidChange(notification: Notification) {
         self.batteryLevel = UIDevice.current.batteryLevel
-        if self.batteryLevel <= 0.05 {
-            E4linkManager().saveSession()
-            E4linkManager().notify(title: "iPhone Battery Low", body: "Session saved to prevent data loss. Please charge phone.", sound: "default")
+        if (self.batteryLevel < 0.05 && E4linkManager.shared.didCollectData) {
+            E4linkManager.shared.saveSession()
+            E4linkManager.shared.notify(title: "iPhone Battery Low", body: "Session saved to prevent data loss. Please charge phone.", sound: "default")
         }
         print(self.batteryLevel)
     }
