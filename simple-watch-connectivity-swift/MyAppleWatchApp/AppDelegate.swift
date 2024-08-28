@@ -3,13 +3,10 @@
 //  MyAppleWatchApp
 //
 
-import SwiftUI
 import UserNotifications
 import HealthKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
-    @ObservedObject var e4linkManager = E4linkManager.shared
-    @ObservedObject var workoutManager = WorkoutManager.shared
     var backgroundTask: UIBackgroundTaskIdentifier = .invalid
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -28,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().setBadgeCount(0)
         
         EmpaticaAPI.initialize()
-        workoutManager.requestAuth()
+        WorkoutManager.shared.requestAuth()
         return true
     }
     
@@ -55,10 +52,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        if (e4linkManager.didCollectData) {
-            e4linkManager.saveSession()
+        if (E4linkManager.shared.didCollectData) {
+            E4linkManager.shared.saveSession()
         }
-        e4linkManager.notify(title: "E4 Terminated", body: "Please reopen app and restart discovery.", sound: "default")
+        E4linkManager.shared.notify(title: "E4 Terminated", body: "Please reopen app and restart discovery.", sound: "default")
         NotificationCenter.default.post(name: UIApplication.willTerminateNotification, object: nil)
     }
     

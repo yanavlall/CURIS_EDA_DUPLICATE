@@ -7,16 +7,12 @@ import Zip
 import SwiftUI
 
 class E4linkManager: NSObject, ObservableObject {
+    @ObservedObject var watchConnectivityManager = WatchConnectivityManager.shared
+    
     static let shared = E4linkManager()
     
-    @ObservedObject var watchConnectivityManager = WatchConnectivityManager.shared
-    @ObservedObject var workoutManager = WorkoutManager.shared
-    @ObservedObject var dataManager = DataManager.shared
     @Published var devices: [EmpaticaDeviceManager] = []
     @Published var deviceStatus = "Disconnected"
-    @Published var showSurveyButton = false
-    @Published var showSurvey = false
-    
     var EDAstruct = CSVlog(filename: "EDA.csv")
     var BVPstruct = CSVlog(filename: "BVP.csv")
     var TEMPstruct = CSVlog(filename: "TEMP.csv")
@@ -25,11 +21,12 @@ class E4linkManager: NSObject, ObservableObject {
     var TAGstruct = CSVlog(filename: "TAG.csv")
     var FEATUREstruct = CSVlog(filename: "FEATURE.csv")
     
-    var batteryLevel: Int = 0
-    var didCollectData: Bool = false
-
     @Published var threshold: Float = 3.0
-    
+    @Published var batteryLevel: Int = 0
+    var didCollectData: Bool = false
+    var showSurveyButton = false
+    var showSurvey = false
+
     @Published var absGSR: Float = 0.0
     @Published var featureDetected: Bool = false
     var GSRList: [Float] = []
@@ -233,7 +230,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                         print("Feature detection started at index \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
                         print("Flag up")
                         
-                        self.watchConnectivityManager.sendDataFromPhone()
+                        WatchConnectivityManager.shared.sendDataFromPhone()
                         self.notify(title: "E4 Feature Detected", body: "EDA level above threshold.", sound: "positive.wav")
                         self.showSurveyButton = true
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1800) {
@@ -252,7 +249,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                         self.FEATUREstruct.content.append(String(self.feature_start)+","+String(self.feature_end)+"\n")
                         self.featureIndices.append((self.feature_start, self.feature_end))
                         
-                        self.watchConnectivityManager.sendDataFromPhonePt2()
+                        WatchConnectivityManager.shared.sendDataFromPhonePt2()
                         self.notify(title: "E4 Feature Ended", body: "EDA level below threshold.", sound: "negative.wav")
                     }
                 }
@@ -403,16 +400,18 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             print("[didUpdate] Disconnected \(device.serialNumber!).")
             self.notify(title: "E4 Disconnected", body: "Rediscover and reconnect to continue streaming.", sound: "default")
             self.saveSession()
-            self.dataManager.reloadFiles()
+            DataManager.shared.reloadFiles()
             self.restartDiscovery()
-            self.watchConnectivityManager.sendWorkoutEndFromPhone()
+            WatchConnectivityManager.shared.sendWorkoutEndFromPhone()
             break
         case kDeviceStatusConnecting:
             print("[didUpdate] Connecting \(device.serialNumber!).")
             break
         case kDeviceStatusConnected:
             print("[didUpdate] Connected \(device.serialNumber!).")
-            self.workoutManager.startWatchWorkout()
+            DispatchQueue.main.async {
+                WorkoutManager.shared.startWatchWorkout()
+            }
             break
         case kDeviceStatusFailedToConnect:
             print("[didUpdate] Failed to connect \(device.serialNumber!).")
