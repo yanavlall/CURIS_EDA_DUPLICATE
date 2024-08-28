@@ -23,6 +23,10 @@ class E4linkManager: NSObject, ObservableObject {
     
     @Published var threshold: Float = 3.0
     @Published var batteryLevel: Int = 0
+    @Published var useManualThreshold: Bool = false // Track if the manual threshold is being used
+    @Published var manualThreshold: Float = 3.0 // Initial manual threshold
+    @Published var activeThreshold: Float = 0.0
+
     var didCollectData: Bool = false
     var showSurveyButton = false
     var showSurvey = false
@@ -30,6 +34,7 @@ class E4linkManager: NSObject, ObservableObject {
     @Published var absGSR: Float = 0.0
     @Published var featureDetected: Bool = false
     var GSRList: [Float] = []
+    var zeroGSR: Float = 0.0
     var current_index = 0
     var shouldPersistData: Bool = true
     var baseline: Float = 0.0
@@ -186,9 +191,10 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             
             // Update state variables
             self.didCollectData = true
-            self.GSRList.append(self.absGSR)
-            self.current_index += 1
-            
+            if self.absGSR != self.zeroGSR {
+                self.GSRList.append(self.absGSR)
+                self.current_index += 1
+            }
             // Save data if required
             if self.shouldPersistData {
                 Task {
@@ -289,6 +295,8 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     
     // Go back 15 minutes in time, check if mean is over threshold throughout that period
     func didDetectFeature(signal: [Float], currentIndex: Int) -> Bool {
+        let activeThreshold = useManualThreshold ? manualThreshold : threshold
+
         let chunkSize = 5 * 60 * self.samplingRate
         let lookBackPeriod = 15 * 60 * self.samplingRate // 15 minutes in data points - Actual
         
@@ -311,7 +319,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             
             print("Chunk \(i): mean = \(meanChunk), threshold = \(self.threshold), chunkStart = \(chunkStart), chunkEnd = \(chunkEnd)")
 
-            if (meanChunk <= self.threshold) {
+            if (meanChunk <= self.activeThreshold) {
                 print(meanChunk)
                 return false
             }
@@ -322,6 +330,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     
     // Every one minute after the feature is detected, you check if the last 10 minutes had mean > threshold, keep doing this until not true
     func postFeatureCheck(signal: [Float], currentIndex: Int) -> Bool {
+        let activeThreshold = useManualThreshold ? manualThreshold : threshold
         let lookBackPeriod = 10 * 60 * self.samplingRate // 10 minutes in data points - Actual
     //  let lookBackPeriod = 2 * 60 * samplingRate
         
@@ -338,10 +347,10 @@ extension E4linkManager: EmpaticaDeviceDelegate {
         let lookBackChunk = Array(cleanedSignal[lookBackStart..<lookBackEnd])
         let meanChunk = lookBackChunk.reduce(0, +) / Float(lookBackChunk.count)
         
-        if (meanChunk > self.threshold) {
+        if (meanChunk > self.activeThreshold) {
             print("PostFeatureChecking Continuing")
     }
-        return meanChunk > self.threshold
+        return meanChunk > self.activeThreshold
     }
 
     func didReceiveBVP(_ bvp: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {

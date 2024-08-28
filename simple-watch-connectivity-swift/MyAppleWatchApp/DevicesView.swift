@@ -125,43 +125,47 @@ struct DevicesView: View {
             if e4linkManager.deviceStatus == "Connected" {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("EDA Value: \(e4linkManager.absGSR)")
-                    Text("Threshold: \(e4linkManager.threshold == 0.0 ? "n/a" : String(e4linkManager.threshold))")
+                   // Text("Threshold: \(e4linkManager.threshold == 0.0 ? "n/a" : String(e4linkManager.threshold))")
+                    Text("Threshold: \(e4linkManager.useManualThreshold ? e4linkManager.manualThreshold : e4linkManager.threshold)")
+                    Text("Manual Threshold: \(e4linkManager.manualThreshold)")
                     Text("List Length: \(e4linkManager.GSRList.count)")
                     Text("Time: \(e4linkManager.current_index / e4linkManager.oneMinuteBufferSize) minute(s)")
                     Text("Feature Flag: \(e4linkManager.featureDetected)")
-                    
-                    HStack {
-                        TextField("Enter new threshold", text: $thresholdInput)
-                            .focused($isFocused)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .keyboardType(.decimalPad)
-                            .preferredColorScheme(.light)
-                            .toolbar {
-                                ToolbarItemGroup(placement: .keyboard) {
-                                    Spacer()
-
-                                    Button(action: { isFocused = false }) {
-                                        Text("Dismiss")
-                                            .foregroundColor(.blue)
-                                            .font(.callout)
-                                            .fontWeight(.bold)
+                    Toggle("Use Manual Threshold", isOn: $e4linkManager.useManualThreshold)
+                    if e4linkManager.useManualThreshold {
+                        HStack {
+                            TextField("Enter new threshold", text: $thresholdInput)
+                                .focused($isFocused)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .keyboardType(.decimalPad)
+                                .preferredColorScheme(.light)
+                                .toolbar {
+                                    ToolbarItemGroup(placement: .keyboard) {
+                                        Spacer()
+                                        
+                                        Button(action: { isFocused = false }) {
+                                            Text("Dismiss")
+                                                .foregroundColor(.blue)
+                                                .font(.callout)
+                                                .fontWeight(.bold)
+                                        }
                                     }
                                 }
+                            Button(action: {
+                                if thresholdInput.isEmpty {
+                                    showThresholdAlert = true
+                                } else {
+                                    e4linkManager.manualThreshold = Float(thresholdInput) ?? e4linkManager.manualThreshold
+                                    thresholdInput = ""
+                                }
+                                isFocused = false
+                            }) {
+                                Text("Set")
+                                    .padding(10)
+                                    .foregroundColor(.white)
+                                    .background(Color.blue)
+                                    .cornerRadius(10)
                             }
-                        Button(action: {
-                            if thresholdInput.isEmpty {
-                                showThresholdAlert = true
-                            } else {
-                                e4linkManager.threshold = Float(thresholdInput) ?? e4linkManager.threshold
-                                thresholdInput = ""
-                            }
-                            isFocused = false
-                        }) {
-                            Text("Set")
-                                .padding(10)
-                                .foregroundColor(.white)
-                                .background(Color.blue)
-                                .cornerRadius(10)
                         }
                         .alert(isPresented: $showThresholdAlert) {
                             Alert(
