@@ -125,7 +125,6 @@ struct DevicesView: View {
             if e4linkManager.deviceStatus == "Connected" {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("EDA Value: \(e4linkManager.absGSR)")
-                   // Text("Threshold: \(e4linkManager.threshold == 0.0 ? "n/a" : String(e4linkManager.threshold))")
                     Text("Threshold: \(e4linkManager.useManualThreshold ? e4linkManager.manualThreshold : e4linkManager.threshold)")
                     Text("Manual Threshold: \(e4linkManager.manualThreshold)")
                     Text("List Length: \(e4linkManager.GSRList.count)")
@@ -156,6 +155,7 @@ struct DevicesView: View {
                                     showThresholdAlert = true
                                 } else {
                                     e4linkManager.manualThreshold = Float(thresholdInput) ?? e4linkManager.manualThreshold
+                                    e4linkManager.objectWillChange.send()
                                     thresholdInput = ""
                                 }
                                 isFocused = false

@@ -7,8 +7,6 @@ import Zip
 import SwiftUI
 
 class E4linkManager: NSObject, ObservableObject {
-    @ObservedObject var watchConnectivityManager = WatchConnectivityManager.shared
-    
     static let shared = E4linkManager()
     
     @Published var devices: [EmpaticaDeviceManager] = []
@@ -238,10 +236,6 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                         
                         WatchConnectivityManager.shared.sendDataFromPhone()
                         self.notify(title: "E4 Feature Detected", body: "EDA level above threshold.", sound: "positive.wav")
-                        self.showSurveyButton = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1800) {
-                            self.showSurveyButton = false
-                        }
                     }
                 }
                 
@@ -257,6 +251,10 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                         
                         WatchConnectivityManager.shared.sendDataFromPhonePt2()
                         self.notify(title: "E4 Feature Ended", body: "EDA level below threshold.", sound: "negative.wav")
+                        self.showSurveyButton = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1800) {
+                            self.showSurveyButton = false
+                        }
                     }
                 }
             }
@@ -396,7 +394,9 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     }
 
     func didReceiveBatteryLevel(_ level: Float, withTimestamp timestamp: Double, fromDevice: EmpaticaDeviceManager!) {
-        self.batteryLevel = Int(level * 100)
+        DispatchQueue.main.async {
+            self.batteryLevel = Int(level * 100)
+        }
     }
     
     func didReceiveTag(atTimestamp timestamp: Double, fromDevice: EmpaticaDeviceManager!) {
