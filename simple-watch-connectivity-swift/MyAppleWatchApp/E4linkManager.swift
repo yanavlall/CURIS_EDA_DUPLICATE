@@ -33,19 +33,20 @@ class E4linkManager: NSObject, ObservableObject {
     @Published var featureDetected: Bool = false
     var GSRList: [Float] = []
     var zeroGSR: Float = 0.0
-    var current_index = 0
+    var current_index: Int = 0
     var shouldPersistData: Bool = true
     var baseline: Float = 0.0
     var flag: Bool = false
     var maintainFlag: Bool = false
     var isCollectingInitialData: Bool = true
-    var featureIndices: [(Int, Int)] = []
-    var oneMinuteBufferSize = 1 * 60 * 4
+    var featureTimestamps: [(Double, Double)] = []
+    var oneMinuteBufferSize: Int = 1 * 60 * 4
     var samplingRate: Int = 4
-    var collectionDuration = 6 * 60 * 60 * 4 // Testing - 5 minutes, Actual - 6 hours
-    var feature_start = 0
-    var feature_end = 0
-    var lastFeatureCheckIndex = 0
+    var collectionDuration: Int = 6 * 60 * 60 * 4 // Testing - 5 minutes, Actual - 6 hours
+    var oneMinuteTimestampBufferSize: Int = 60
+    var feature_start: Double = 0
+    var feature_end: Double = 0
+    var lastFeatureCheckIndex: Int = 0
     
     var allDisconnected: Bool {
         return self.devices.reduce(true) { (value, device) -> Bool in
@@ -230,7 +231,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                     print("One Minute Passed, Feature Flag is down \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
                     if self.didDetectFeature(signal: self.GSRList, currentIndex: self.current_index) {
                         self.featureDetected = true
-                        self.feature_start = self.current_index
+                        self.feature_start = timestamp
                         print("Feature detection started at index \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
                         print("Flag up")
                         
@@ -240,14 +241,14 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                 }
                 
             } else {
-                if (self.current_index - self.feature_start) % self.oneMinuteBufferSize == 0 {
+                if (Int(timestamp - self.feature_start)) % self.oneMinuteTimestampBufferSize == 0 {
                     print("One Minute Passed, Feature Flag is up at index:\(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
                     if !self.postFeatureCheck(signal: self.GSRList, currentIndex: self.current_index) {
                         self.featureDetected = false
-                        self.feature_end = self.current_index
+                        self.feature_end = timestamp
                         print("Feature detection ended at index \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
                         self.FEATUREstruct.content.append(String(self.feature_start)+","+String(self.feature_end)+"\n")
-                        self.featureIndices.append((self.feature_start, self.feature_end))
+                        self.featureTimestamps.append((self.feature_start, self.feature_end))
                         
                         WatchConnectivityManager.shared.sendDataFromPhonePt2()
                         self.notify(title: "E4 Feature Ended", body: "EDA level below threshold.", sound: "negative.wav")
