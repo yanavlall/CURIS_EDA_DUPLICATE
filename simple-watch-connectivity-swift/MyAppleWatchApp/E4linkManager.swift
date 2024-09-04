@@ -24,6 +24,14 @@ class E4linkManager: NSObject, ObservableObject {
     @Published var useManualThreshold: Bool = false // Track if the manual threshold is being used
     @Published var manualThreshold: Float = 3.0 // Initial manual threshold
     @Published var activeThreshold: Float = 0.0
+    @Published var featureState: FeatureState = .off
+    
+    enum FeatureState {
+        case off
+        case on
+        case goingDown
+        case goingUp
+    }
 
     var didCollectData: Bool = false
     var showSurveyButton = false
@@ -44,9 +52,12 @@ class E4linkManager: NSObject, ObservableObject {
     var samplingRate: Int = 4
     var collectionDuration: Int = 6 * 60 * 60 * 4 // Testing - 5 minutes, Actual - 6 hours
     var oneMinuteTimestampBufferSize: Int = 60
+    var featureStateChangeList: [(Double, FeatureState)] = []
     var feature_start: Double = 0
     var feature_end: Double = 0
     var lastFeatureCheckIndex: Int = 0
+    var previousFeatureState: FeatureState = .off // Initialize with the default state
+
     
     var allDisconnected: Bool {
         return self.devices.reduce(true) { (value, device) -> Bool in
@@ -217,7 +228,7 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                     self.threshold = self.calculateThreshold(from: cleanedSignal)
                     
                     self.lastFeatureCheckIndex = self.current_index
-                    print("Initial data collection completed. Baseline: \(self.baseline), Threshold: \(self.threshold), Time: \(self.current_index / self.oneMinuteBufferSize)")
+                    print("Initial data collection completed. Baseline: \(self.baseline), Threshold: \(self.threshold), Time: \(timestamp)")
                     
                     // Stop persisting data after reaching collectionDuration
                     self.shouldPersistData = false
@@ -226,24 +237,48 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             }
             
             if !self.featureDetected {
-                if (self.current_index - self.lastFeatureCheckIndex) % self.oneMinuteBufferSize == 0 {
+                if (Int(timestamp - self.feature_start)) % self.oneMinuteTimestampBufferSize == 0 {
                     self.lastFeatureCheckIndex = self.current_index
-                    print("One Minute Passed, Feature Flag is down \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
-                    if self.didDetectFeature(signal: self.GSRList, currentIndex: self.current_index) {
+                    print("One Minute Passed, Feature Flag is down \(self.current_index), Time: \(timestamp)")
+                    
+                    let newState = self.didDetectFeature(signal: self.GSRList, currentIndex: self.current_index)
+                    // Only log the state change if it is different from the previous state
+                    if newState != self.previousFeatureState {
+                        self.featureStateChangeList.append((timestamp, newState))
+                        self.previousFeatureState = newState // Update the previous state
+                    }
+                    
+                    self.featureState = newState // Set the current state
+                    
+                    if newState == .on {
                         self.featureDetected = true
                         self.feature_start = timestamp
-                        print("Feature detection started at index \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
+                        print("Feature detection started at index \(self.current_index), Time: \(timestamp)")
                         print("Flag up")
                         
                         WatchConnectivityManager.shared.sendDataFromPhone()
                         self.notify(title: "E4 Feature Detected", body: "EDA level above threshold.", sound: "positive.wav")
+                        
+                    } else if self.featureState == .goingUp {
+                        self.featureState = .goingUp
+                        print("Feature is going up. Current Index: \(self.current_index)")
                     }
                 }
                 
             } else {
                 if (Int(timestamp - self.feature_start)) % self.oneMinuteTimestampBufferSize == 0 {
-                    print("One Minute Passed, Feature Flag is up at index:\(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
-                    if !self.postFeatureCheck(signal: self.GSRList, currentIndex: self.current_index) {
+                    print("One Minute Passed, Feature Flag is up at index:\(self.current_index), Time: \(timestamp)")
+                    let newState = self.postFeatureCheck(signal: self.GSRList, currentIndex: self.current_index)
+                    
+                    // Only log the state change if it is different from the previous state
+                    if newState != self.previousFeatureState {
+                        self.featureStateChangeList.append((timestamp, newState))
+                        self.previousFeatureState = newState // Update the previous state
+                    }
+                    
+                    self.featureState = newState // Set the current state
+                    
+                    if newState == .off {
                         self.featureDetected = false
                         self.feature_end = timestamp
                         print("Feature detection ended at index \(self.current_index), Time: \(self.current_index / self.oneMinuteBufferSize)")
@@ -256,11 +291,17 @@ extension E4linkManager: EmpaticaDeviceDelegate {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1800) {
                             self.showSurveyButton = false
                         }
+                        
+                    } else if self.featureState == .goingDown {
+                        print("Feature is going down. Current Index: \(self.current_index)")
+                        // Feature is decaying but not completely off yet
                     }
                 }
             }
         }
     }
+    
+    ///Don't include Zeroes in the Calculation
     
     func calculateThreshold(from data: [Float]) -> Float {
         let sortedData = data.sorted()
@@ -293,24 +334,22 @@ extension E4linkManager: EmpaticaDeviceDelegate {
     }
     
     // Go back 15 minutes in time, check if mean is over threshold throughout that period
-    func didDetectFeature(signal: [Float], currentIndex: Int) -> Bool {
+    func didDetectFeature(signal: [Float], currentIndex: Int) -> FeatureState {
         let activeThreshold = useManualThreshold ? manualThreshold : threshold
-
         let chunkSize = 5 * 60 * self.samplingRate
         let lookBackPeriod = 15 * 60 * self.samplingRate // 15 minutes in data points - Actual
         
-        // let chunkSize = 30 * samplingRate
-        // let lookBackPeriod = 3 * 60 * samplingRate
-        
-        guard (currentIndex >= lookBackPeriod) else {
-            print("DidDetectFeature - Not enough data for feature detection at index \(currentIndex)")
-            return false
+        guard currentIndex >= lookBackPeriod else {
+            print("didDetectFeature - Not enough data for feature detection at index \(currentIndex)")
+            return .off // Not enough data to determine
         }
-        
+
         // Clean the signal before calculations
         let cleanedSignal = self.smooth(signal: signal, windowSize: 20)
-        
-        for i in 0..<3 { // CHANGE TO 3 WHEN DONE WITH TESTING
+
+        var aboveThresholdCount = 0
+
+        for i in 0..<3 {
             let chunkStart = currentIndex - lookBackPeriod + (i * chunkSize)
             let chunkEnd = min(chunkStart + chunkSize, cleanedSignal.count)
             let chunk = Array(cleanedSignal[chunkStart..<chunkEnd])
@@ -318,39 +357,62 @@ extension E4linkManager: EmpaticaDeviceDelegate {
             
             print("Chunk \(i): mean = \(meanChunk), threshold = \(self.threshold), chunkStart = \(chunkStart), chunkEnd = \(chunkEnd)")
 
-            if (meanChunk <= self.activeThreshold) {
-                print(meanChunk)
-                return false
+            if meanChunk > activeThreshold {
+                aboveThresholdCount += 1
             }
         }
-        return true
-        
-    }
-    
-    // Every one minute after the feature is detected, you check if the last 10 minutes had mean > threshold, keep doing this until not true
-    func postFeatureCheck(signal: [Float], currentIndex: Int) -> Bool {
-        let activeThreshold = useManualThreshold ? manualThreshold : threshold
-        let lookBackPeriod = 10 * 60 * self.samplingRate // 10 minutes in data points - Actual
-    //  let lookBackPeriod = 2 * 60 * samplingRate
-        
-        guard (currentIndex >= lookBackPeriod) else {
-            print("postFeatureCheck - Not enough data for feature detection at index \(currentIndex)")
-            return false
+
+        // Determine the feature state based on the number of chunks above the threshold
+        switch aboveThresholdCount {
+        case 3:
+            return .on // All chunks are above threshold, fully detected feature
+        case 1...2:
+            return .goingUp // Partial detection, feature is "going up"
+        default:
+            return .off // Not enough above-threshold chunks, feature not detected
         }
-    
+    }
+
+    // Every one minute after the feature is detected, you check if the last 10 minutes had mean > threshold, keep doing this until not true
+    func postFeatureCheck(signal: [Float], currentIndex: Int) -> FeatureState {
+        let activeThreshold = useManualThreshold ? manualThreshold : threshold
+        let chunkSize = 5 * 60 * self.samplingRate
+        let lookBackPeriod = 15 * 60 * self.samplingRate // 15 minutes in data points - Actual
+        
+        guard currentIndex >= lookBackPeriod else {
+            print("postFeatureCheck - Not enough data for post-feature check at index \(currentIndex)")
+            return .on // Continue as "on" if not enough data
+        }
+
         // Clean the signal before calculations
         let cleanedSignal = self.smooth(signal: signal, windowSize: 20)
-        
-        let lookBackStart = currentIndex - lookBackPeriod
-        let lookBackEnd = currentIndex
-        let lookBackChunk = Array(cleanedSignal[lookBackStart..<lookBackEnd])
-        let meanChunk = lookBackChunk.reduce(0, +) / Float(lookBackChunk.count)
-        
-        if (meanChunk > self.activeThreshold) {
-            print("PostFeatureChecking Continuing")
+
+        var belowThresholdCount = 0
+
+        for i in 0..<3 {
+            let chunkStart = currentIndex - lookBackPeriod + (i * chunkSize)
+            let chunkEnd = min(chunkStart + chunkSize, cleanedSignal.count)
+            let chunk = Array(cleanedSignal[chunkStart..<chunkEnd])
+            let meanChunk = chunk.reduce(0, +) / Float(chunk.count)
+            
+            print("Chunk \(i): mean = \(meanChunk), threshold = \(self.threshold), chunkStart = \(chunkStart), chunkEnd = \(chunkEnd)")
+
+            if meanChunk <= activeThreshold {
+                belowThresholdCount += 1
+            }
+        }
+
+        // Determine the feature state based on the number of chunks below the threshold
+        switch belowThresholdCount {
+        case 3:
+            return .off // All chunks are below threshold, feature ends
+        case 1...2:
+            return .goingDown // Partial feature decay, going down
+        default:
+            return .on // Feature is still on
+        }
     }
-        return meanChunk > self.activeThreshold
-    }
+
 
     func didReceiveBVP(_ bvp: Float, withTimestamp timestamp: Double, fromDevice device: EmpaticaDeviceManager!) {
         if (!self.BVPstruct.headerSet) {
